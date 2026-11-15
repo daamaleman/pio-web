@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Baloo 2", system-ui, sans-serif;
+  --font-sans: "Nunito", system-ui, sans-serif;
+
+  /* Brand */
+  --color-rosa: #FF5C93;
+  --color-rosa-profundo: #D6336C;
+  --color-rosa-suave: #FFE3EE;
+  --color-cian: #1CABE2;
+  --color-azul: #374EA2;        /* teacher mode, as in Figma */
+  --color-azul-suave: #E8ECF8;
+  --color-tinta: #1D2A5C;
+  --color-arena: #F7F5F2;
+  --color-linea: #ECE7E1;
+
+  /* Emotions (drops) */
+  --color-alegria: #FFC20E;
+  --color-tristeza: #8FD6F2;
+  --color-enojo: #FF8A80;
+  --color-miedo: #C9A3D1;
+  --color-calma: #B8DC8E;
+  --color-carino: #FF9EBF;
+
+  --radius-card: 1.25rem;
+}
+
+body {
+  @apply bg-arena text-tinta font-sans antialiased;
+}
+
+h1, h2, h3 {
+  @apply font-display;
+}
