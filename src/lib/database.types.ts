@@ -1376,6 +1376,19 @@ export type Database = {
         }
         Returns: Json
       }
+      assign_lesson: {
+        Args: {
+          p_class_date: string
+          p_due_date: string
+          p_group_id: string
+          p_lesson_id: string
+          p_message?: string
+          p_notify_families?: boolean
+          p_remind_day_before?: boolean
+          p_student_ids?: string[]
+        }
+        Returns: string
+      }
       assignment_progress: { Args: { p_assignment_id: string }; Returns: Json }
       check_rate_limit: {
         Args: { p_key: string; p_max: number; p_window_seconds: number }

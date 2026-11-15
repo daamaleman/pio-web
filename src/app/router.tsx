@@ -5,6 +5,8 @@ import LoginPage from "@/features/auth/LoginPage";
 import ProfilePage from "@/features/auth/ProfilePage";
 import { Placeholder } from "@/features/placeholder/Placeholder";
 import TeacherHome from "@/features/teacher/TeacherHome";
+import LibraryPage from "@/features/teacher/LibraryPage";
+import AssignPage from "@/features/teacher/AssignPage";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -20,11 +22,10 @@ export const router = createBrowserRouter([
             element: <RequireRole roles={["teacher"]} />,
             children: [
               { path: "docente", element: <TeacherHome /> },
+              { path: "docente/lecciones", element: <LibraryPage /> },
               {
-                path: "docente/lecciones",
-                element: (
-                  <Placeholder title="Lecciones" step="W3 (Biblioteca)" />
-                ),
+                path: "docente/lecciones/:lessonId/asignar",
+                element: <AssignPage />,
               },
               {
                 path: "docente/grupos",
