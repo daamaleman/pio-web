@@ -7,6 +7,7 @@ import { Placeholder } from "@/features/placeholder/Placeholder";
 import TeacherHome from "@/features/teacher/TeacherHome";
 import LibraryPage from "@/features/teacher/LibraryPage";
 import AssignPage from "@/features/teacher/AssignPage";
+import ProgressPage from "@/features/teacher/ProgressPage";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -37,7 +38,7 @@ export const router = createBrowserRouter([
               },
               {
                 path: "docente/asignaciones/:id",
-                element: <Placeholder title="Progreso" step="W4 (Progreso)" />,
+                element: <ProgressPage />,
               },
             ],
           },

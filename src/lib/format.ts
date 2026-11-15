@@ -1,6 +1,17 @@
 import type { Json } from "./database.types";
 
 const TZ = "America/Managua";
+const dayFmt = new Intl.DateTimeFormat("en-CA", { timeZone: TZ });
+const timeFmt = new Intl.DateTimeFormat("es-NI", {
+  timeZone: TZ,
+  hour: "numeric",
+  minute: "2-digit",
+  hour12: true,
+});
+const weekdayFmt = new Intl.DateTimeFormat("es-NI", {
+  timeZone: TZ,
+  weekday: "long",
+});
 
 // "2026-11-15" in Nicaragua time (not UTC)
 export function todayISO(): string {
@@ -30,6 +41,21 @@ export function shortDate(iso: string): string {
   })
     .format(new Date(`${iso}T12:00:00Z`))
     .replace(/\./g, "");
+}
+
+// "hoy, 7:12 p. m." · "ayer, 6:40 p. m." · "el lunes" · "el 2 nov"
+export function relativeDay(timestamp: string): string {
+  const d = new Date(timestamp);
+  const day = dayFmt.format(d);
+  const today = todayISO();
+  const diff = Math.round(
+    (Date.parse(`${today}T12:00:00Z`) - Date.parse(`${day}T12:00:00Z`)) /
+      86_400_000,
+  );
+  if (diff === 0) return `hoy, ${timeFmt.format(d)}`;
+  if (diff === 1) return `ayer, ${timeFmt.format(d)}`;
+  if (diff > 1 && diff < 7) return `el ${weekdayFmt.format(d)}`;
+  return `el ${shortDate(day).replace(/^\S+\s/, "")}`;
 }
 
 // Lesson titles come as { "es": "...", "en": "..." }

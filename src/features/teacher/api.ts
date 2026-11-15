@@ -149,3 +149,55 @@ export function useGroupStudents(groupId: string | undefined) {
     },
   });
 }
+
+export type IndicatorResult =
+  | "achieved"
+  | "in_progress"
+  | "needs_support"
+  | null;
+
+export type AssignmentProgress = {
+  assignment_id: string;
+  lesson_slug: string;
+  title: Json;
+  week: number;
+  class_date: string;
+  due_date: string;
+  summary: {
+    students: number;
+    completed: number;
+    in_progress: number;
+    not_started: number;
+    completed_pct: number;
+    badges_earned: number;
+  };
+  students: {
+    id: string;
+    display_name: string;
+    status: "completed" | "in_progress" | "not_started";
+    completed_at: string | null;
+    on_time: boolean | null;
+    current_position: number | null;
+    latest_emotion: Emotion | null;
+    indicators: {
+      number: number;
+      name: Json;
+      indicator: string;
+      result: IndicatorResult;
+    }[];
+  }[];
+};
+
+export function useAssignmentProgress(assignmentId: string | undefined) {
+  return useQuery({
+    queryKey: ["assignment-progress", assignmentId],
+    enabled: !!assignmentId,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("assignment_progress", {
+        p_assignment_id: assignmentId!,
+      });
+      if (error) throw error;
+      return data as unknown as AssignmentProgress;
+    },
+  });
+}

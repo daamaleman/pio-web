@@ -1442,6 +1442,7 @@ export type Database = {
         Args: { p_platform: string; p_token: string }
         Returns: Json
       }
+      remind_pending: { Args: { p_assignment_id: string }; Returns: Json }
       request_help: { Args: { p_wants: string }; Returns: Json }
       reset_student_pin: {
         Args: { p_new_pin?: string; p_student_id: string }
