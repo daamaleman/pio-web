@@ -201,3 +201,19 @@ export function useAssignmentProgress(assignmentId: string | undefined) {
     },
   });
 }
+
+export function useFamilyToken(groupId: string | undefined) {
+  return useQuery({
+    queryKey: ["family-token", groupId],
+    enabled: !!groupId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("groups")
+        .select("family_qr_token")
+        .eq("id", groupId!)
+        .single();
+      if (error) throw error;
+      return data.family_qr_token;
+    },
+  });
+}

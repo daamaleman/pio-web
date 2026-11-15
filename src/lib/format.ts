@@ -86,3 +86,10 @@ export function norm(text: string): string {
     .toLowerCase()
     .trim();
 }
+
+export function publicBase(): string {
+  return (import.meta.env.VITE_PUBLIC_URL || window.location.origin).replace(
+    /\/$/,
+    "",
+  );
+}

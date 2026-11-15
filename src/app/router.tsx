@@ -8,9 +8,14 @@ import TeacherHome from "@/features/teacher/TeacherHome";
 import LibraryPage from "@/features/teacher/LibraryPage";
 import AssignPage from "@/features/teacher/AssignPage";
 import ProgressPage from "@/features/teacher/ProgressPage";
+import AlertsPage from "@/features/alerts/AlertsPage";
+import FamilyPage from "@/features/family/FamilyPage";
+import GroupsPage from "@/features/teacher/GroupsPage";
+import FamilyQrPage from "@/features/teacher/FamilyQrPage";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
+  { path: "/familia/:token", element: <FamilyPage /> },
   {
     element: <RequireAuth />,
     children: [
@@ -28,13 +33,14 @@ export const router = createBrowserRouter([
                 path: "docente/lecciones/:lessonId/asignar",
                 element: <AssignPage />,
               },
+              { path: "docente/grupos", element: <GroupsPage /> },
               {
-                path: "docente/grupos",
-                element: <Placeholder title="Grupos" step="W6 (Estudiantes)" />,
+                path: "docente/grupos/:groupId/qr",
+                element: <FamilyQrPage />,
               },
               {
                 path: "docente/alertas",
-                element: <Placeholder title="Alertas" step="W5 (Alertas)" />,
+                element: <AlertsPage />,
               },
               {
                 path: "docente/asignaciones/:id",
@@ -53,7 +59,7 @@ export const router = createBrowserRouter([
               },
               {
                 path: "escuela/alertas",
-                element: <Placeholder title="Alertas" step="W5 (Alertas)" />,
+                element: <AlertsPage />,
               },
             ],
           },
