@@ -18,6 +18,7 @@ import SchoolHome from "@/features/school/SchoolHome";
 import StaffPage from "@/features/school/StaffPage";
 import SetPasswordPage from "@/features/auth/SetPasswordPage";
 import ForgotPasswordPage from "@/features/auth/ForgotPasswordPage";
+import GroupFormPage from "@/features/teacher/GroupFormPage";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -44,6 +45,14 @@ export const router = createBrowserRouter([
                 element: <AssignPage />,
               },
               { path: "docente/grupos", element: <GroupsPage /> },
+              {
+                path: "docente/grupos/nuevo",
+                element: <GroupFormPage />,
+              },
+              {
+                path: "docente/grupos/:groupId/editar",
+                element: <GroupFormPage />,
+              },
               {
                 path: "docente/grupos/:groupId/estudiantes",
                 element: <StudentsPage />,

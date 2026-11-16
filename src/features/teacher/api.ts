@@ -58,7 +58,7 @@ export function useMyGroups() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("groups")
-        .select("id, level, grade, section, class_code, class_weekday")
+        .select("id, level, grade, section, class_code, class_weekday, language")
         .eq("teacher_id", uid!)
         .order("grade")
         .order("section");

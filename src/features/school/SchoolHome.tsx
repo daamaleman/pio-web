@@ -8,6 +8,7 @@ import { addDays, mondayOf } from '@/lib/classDates'
 import { groupLabel, shortDate, todayISO } from '@/lib/format'
 import { ROLE_LABEL, isStaff } from '@/lib/roles'
 import { useMySchools, useSchoolOverview } from './api'
+import { ChatToggle, useSchoolGroupsChat } from './ChatToggle'
 
 export default function SchoolHome() {
   const { role } = useAuth()
@@ -16,6 +17,7 @@ export default function SchoolHome() {
   const [weekStart, setWeekStart] = useState(currentMonday)
   const schoolId = schools.data?.[0]?.school_id
   const overview = useSchoolOverview(schoolId, weekStart)
+  const chat = useSchoolGroupsChat(schoolId)
   const isCurrentWeek = weekStart === currentMonday
 
   if (schools.isLoading) return <div className="m-5 h-96 animate-pulse rounded-card bg-linea lg:m-10" />
@@ -125,6 +127,9 @@ export default function SchoolHome() {
                           <ClimateBar climate={g.climate} />
                         </div>
                       </div>
+                      {g.level === 'secondary' && chat.data && (
+                        <ChatToggle groupId={g.id} groupName={groupLabel(g)} enabled={!!chat.data.get(g.id)} canEdit={role === 'director'} />
+                      )}
                     </li>
                   )
                 })}

@@ -36,7 +36,7 @@ export function useMySchools() {
     queryKey: ['my-schools', uid],
     enabled: !!uid,
     queryFn: async () => {
-      const { data, error } = await supabase.from('staff_schools').select('school_id').eq('profile_id', uid!)
+      const { data, error } = await supabase.from('staff_schools').select('school_id, schools(name)').eq('profile_id', uid!)
       if (error) throw error
       return data
     },
