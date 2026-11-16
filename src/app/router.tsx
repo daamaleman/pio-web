@@ -21,6 +21,7 @@ import ForgotPasswordPage from "@/features/auth/ForgotPasswordPage";
 import GroupFormPage from "@/features/teacher/GroupFormPage";
 import FamiliesPage from "@/features/teacher/FamiliesPage";
 import WellbeingPage from "@/features/wellbeing/WellbeingPage";
+import PlanPage from "@/features/teacher/PlanPage";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -49,6 +50,7 @@ export const router = createBrowserRouter([
             element: <RequireRole roles={["teacher"]} />,
             children: [
               { path: "docente", element: <TeacherHome /> },
+              { path: "docente/plan", element: <PlanPage /> },
               { path: "docente/lecciones", element: <LibraryPage /> },
               {
                 path: "docente/lecciones/:lessonId/asignar",

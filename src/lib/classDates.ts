@@ -7,7 +7,7 @@ export function addDays(iso: string, days: number): string {
 }
 
 // 1 = Monday … 7 = Sunday (same convention as groups.class_weekday)
-function isoWeekday(iso: string): number {
+export function isoWeekday(iso: string): number {
   const d = new Date(`${iso}T12:00:00Z`).getUTCDay();
   return d === 0 ? 7 : d;
 }
@@ -24,4 +24,21 @@ export function classDates(classWeekday: number | null, today = todayISO()) {
 // Monday of the week that contains `iso` (weeks run Monday–Sunday, like group_climate)
 export function mondayOf(iso: string): string {
   return addDays(iso, -(isoWeekday(iso) - 1));
+}
+
+// Every class date of a month ("YYYY-MM-01") for a given weekday (1 = Monday … 7 = Sunday)
+export function classDatesInMonth(
+  firstOfMonth: string,
+  classWeekday: number,
+): string[] {
+  const offset = (classWeekday - isoWeekday(firstOfMonth) + 7) % 7;
+  const dates: string[] = [];
+  for (
+    let d = addDays(firstOfMonth, offset);
+    d.slice(0, 7) === firstOfMonth.slice(0, 7);
+    d = addDays(d, 7)
+  ) {
+    dates.push(d);
+  }
+  return dates;
 }

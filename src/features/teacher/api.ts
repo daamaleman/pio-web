@@ -128,7 +128,7 @@ export function useGroupAssignments(groupId: string | undefined) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("assignments")
-        .select("id, lesson_id, due_date")
+        .select("id, lesson_id, class_date, due_date")
         .eq("group_id", groupId!);
       if (error) throw error;
       return data;
