@@ -12,6 +12,8 @@ import AlertsPage from "@/features/alerts/AlertsPage";
 import FamilyPage from "@/features/family/FamilyPage";
 import GroupsPage from "@/features/teacher/GroupsPage";
 import FamilyQrPage from "@/features/teacher/FamilyQrPage";
+import StudentsPage from "@/features/students/StudentsPage";
+import ImportStudentsPage from "@/features/students/ImportStudentsPage";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -34,6 +36,14 @@ export const router = createBrowserRouter([
                 element: <AssignPage />,
               },
               { path: "docente/grupos", element: <GroupsPage /> },
+              {
+                path: "docente/grupos/:groupId/estudiantes",
+                element: <StudentsPage />,
+              },
+              {
+                path: "docente/grupos/:groupId/estudiantes/agregar",
+                element: <ImportStudentsPage />,
+              },
               {
                 path: "docente/grupos/:groupId/qr",
                 element: <FamilyQrPage />,
