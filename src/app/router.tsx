@@ -20,6 +20,7 @@ import SetPasswordPage from "@/features/auth/SetPasswordPage";
 import ForgotPasswordPage from "@/features/auth/ForgotPasswordPage";
 import GroupFormPage from "@/features/teacher/GroupFormPage";
 import FamiliesPage from "@/features/teacher/FamiliesPage";
+import WellbeingPage from "@/features/wellbeing/WellbeingPage";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -36,6 +37,14 @@ export const router = createBrowserRouter([
         element: <AppShell />,
         children: [
           { path: "yo", element: <ProfilePage /> },
+          {
+            element: (
+              <RequireRole roles={["teacher", "director", "counselor"]} />
+            ),
+            children: [
+              { path: "bienestar/:groupId", element: <WellbeingPage /> },
+            ],
+          },
           {
             element: <RequireRole roles={["teacher"]} />,
             children: [

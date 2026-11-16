@@ -190,6 +190,12 @@ export default function SchoolHome() {
                           <ClimateBar climate={g.climate} />
                         </div>
                       </div>
+                      <Link
+                        to={`/bienestar/${g.id}`}
+                        className="mt-3 inline-block text-sm font-bold text-azul hover:underline"
+                      >
+                        Bienestar del grupo →
+                      </Link>
                       {g.level === "secondary" && chat.data && (
                         <ChatToggle
                           groupId={g.id}
