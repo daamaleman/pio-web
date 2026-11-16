@@ -15,14 +15,21 @@ import FamilyQrPage from "@/features/teacher/FamilyQrPage";
 import StudentsPage from "@/features/students/StudentsPage";
 import ImportStudentsPage from "@/features/students/ImportStudentsPage";
 import SchoolHome from "@/features/school/SchoolHome";
+import StaffPage from "@/features/school/StaffPage";
+import SetPasswordPage from "@/features/auth/SetPasswordPage";
+import ForgotPasswordPage from "@/features/auth/ForgotPasswordPage";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
   { path: "/familia/:token", element: <FamilyPage /> },
+  { path: "/aceptar-invitacion", element: <SetPasswordPage mode="invite" /> },
+  { path: "/restablecer", element: <SetPasswordPage mode="recovery" /> },
+  { path: "/olvide", element: <ForgotPasswordPage /> },
   {
     element: <RequireAuth />,
     children: [
       { index: true, element: <HomeRedirect /> },
+      { path: "*", element: <HomeRedirect /> },
       {
         element: <AppShell />,
         children: [
@@ -77,9 +84,7 @@ export const router = createBrowserRouter([
             children: [
               {
                 path: "escuela/personal",
-                element: (
-                  <Placeholder title="Personal" step="W8 (Invitaciones)" />
-                ),
+                element: <StaffPage />,
               },
             ],
           },
@@ -96,5 +101,4 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  { path: "*", element: <HomeRedirect /> },
 ]);
