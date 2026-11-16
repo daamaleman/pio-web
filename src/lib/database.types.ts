@@ -369,6 +369,8 @@ export type Database = {
           how_responded: Database["public"]["Enums"]["family_how_responded"]
           id: string
           lesson_id: string
+          recorded_by: string | null
+          source: string
           student_id: string
           submitted_at: string
         }
@@ -379,6 +381,8 @@ export type Database = {
           how_responded: Database["public"]["Enums"]["family_how_responded"]
           id?: string
           lesson_id: string
+          recorded_by?: string | null
+          source?: string
           student_id: string
           submitted_at?: string
         }
@@ -389,6 +393,8 @@ export type Database = {
           how_responded?: Database["public"]["Enums"]["family_how_responded"]
           id?: string
           lesson_id?: string
+          recorded_by?: string | null
+          source?: string
           student_id?: string
           submitted_at?: string
         }
@@ -398,6 +404,13 @@ export type Database = {
             columns: ["lesson_id"]
             isOneToOne: false
             referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "family_sheets_recorded_by_fkey"
+            columns: ["recorded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
@@ -1436,6 +1449,17 @@ export type Database = {
       }
       record_family_consent: {
         Args: { p_accepted: boolean; p_version: string }
+        Returns: Json
+      }
+      record_family_sheet: {
+        Args: {
+          p_challenge_done: Database["public"]["Enums"]["family_challenge_done"]
+          p_comment?: string
+          p_emotion_mentioned?: Database["public"]["Enums"]["emotion"]
+          p_how_responded: Database["public"]["Enums"]["family_how_responded"]
+          p_lesson_id: string
+          p_student_id: string
+        }
         Returns: Json
       }
       register_push_token: {
