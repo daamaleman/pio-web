@@ -93,6 +93,12 @@ export default function GroupsPage() {
                 Estudiantes
               </Link>
             </div>
+            <Link
+              to={`/docente/grupos/${g.id}/familias`}
+              className="mt-3 block text-center text-sm font-bold text-azul hover:underline"
+            >
+              Fichas y permisos de las familias →
+            </Link>
           </section>
         ))}
       </div>
