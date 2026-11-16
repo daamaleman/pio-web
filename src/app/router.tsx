@@ -14,6 +14,7 @@ import GroupsPage from "@/features/teacher/GroupsPage";
 import FamilyQrPage from "@/features/teacher/FamilyQrPage";
 import StudentsPage from "@/features/students/StudentsPage";
 import ImportStudentsPage from "@/features/students/ImportStudentsPage";
+import SchoolHome from "@/features/school/SchoolHome";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -63,9 +64,7 @@ export const router = createBrowserRouter([
             children: [
               {
                 path: "escuela",
-                element: (
-                  <Placeholder title="Mi escuela" step="W8 (Dirección)" />
-                ),
+                element: <SchoolHome />,
               },
               {
                 path: "escuela/alertas",
