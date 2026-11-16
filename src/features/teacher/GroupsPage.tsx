@@ -22,9 +22,16 @@ export default function GroupsPage() {
   return (
     <div className="pb-10">
       <div className="flex items-end justify-between gap-3 pr-5 lg:pr-10">
-        <PageHeader title="Mis grupos" subtitle="El código de clase es lo que tus estudiantes escriben para entrar a la app." />
-        <Link to="/docente/grupos/nuevo" className="mb-2 flex shrink-0 items-center gap-2 rounded-full bg-azul px-4 py-2.5 font-bold text-white">
-          <Plus size={18} /> <span className="hidden sm:inline">Nuevo grupo</span>
+        <PageHeader
+          title="Mis grupos"
+          subtitle="El código de clase es lo que tus estudiantes escriben para entrar a la app."
+        />
+        <Link
+          to="/docente/grupos/nuevo"
+          className="mb-2 flex shrink-0 items-center gap-2 rounded-full bg-azul px-4 py-2.5 font-bold text-white"
+        >
+          <Plus size={18} />{" "}
+          <span className="hidden sm:inline">Nuevo grupo</span>
         </Link>
       </div>
       <div className="grid gap-3 px-5 lg:grid-cols-2 lg:px-10">
@@ -52,10 +59,16 @@ export default function GroupsPage() {
                 )}
               </div>
               <div className="flex gap-2">
-                <Link to={`/docente/grupos/${g.id}/editar`} aria-label={`Editar ${groupLabel(g)}`} className="rounded-full border-2 border-linea p-2.5 text-tinta/70 hover:bg-arena">
+                <Link
+                  to={`/docente/grupos/${g.id}/editar`}
+                  aria-label={`Editar ${groupLabel(g)}`}
+                  className="rounded-full border-2 border-linea p-2.5 text-tinta/70 hover:bg-arena"
+                >
                   <Pencil size={18} />
                 </Link>
-                <span className="rounded-full bg-azul-suave p-2.5 text-azul"><Users size={20} /></span>
+                <span className="rounded-full bg-azul-suave p-2.5 text-azul">
+                  <Users size={20} />
+                </span>
               </div>
             </div>
 
