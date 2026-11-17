@@ -107,6 +107,51 @@ export type Database = {
           },
         ]
       }
+      anonymous_questions: {
+        Row: {
+          answered_at: string | null
+          body: string
+          created_on: string
+          group_id: string
+          id: string
+          lesson_id: string
+          status: string
+        }
+        Insert: {
+          answered_at?: string | null
+          body: string
+          created_on?: string
+          group_id: string
+          id?: string
+          lesson_id: string
+          status?: string
+        }
+        Update: {
+          answered_at?: string | null
+          body?: string
+          created_on?: string
+          group_id?: string
+          id?: string
+          lesson_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anonymous_questions_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "anonymous_questions_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       assignment_students: {
         Row: {
           assignment_id: string
@@ -1550,7 +1595,15 @@ export type Database = {
         Args: { p_group_id: string; p_month?: string }
         Returns: Json
       }
+      set_question_status: {
+        Args: { p_question_id: string; p_status: string }
+        Returns: Json
+      }
       set_trusted_adults: { Args: { p_adults: Json }; Returns: Json }
+      submit_anonymous_question: {
+        Args: { p_body: string; p_lesson_slug: string }
+        Returns: Json
+      }
       submit_family_sheet: {
         Args: {
           p_challenge_done: Database["public"]["Enums"]["family_challenge_done"]

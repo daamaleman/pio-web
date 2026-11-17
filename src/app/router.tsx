@@ -24,6 +24,7 @@ import FamiliesPage from "@/features/teacher/FamiliesPage";
 import WellbeingPage from "@/features/wellbeing/WellbeingPage";
 import PlanPage from "@/features/teacher/PlanPage";
 import ReportPage from "@/features/reports/ReportPage";
+import QuestionsPage from "@/features/teacher/QuestionsPage";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -78,6 +79,10 @@ export const router = createBrowserRouter([
               {
                 path: "docente/grupos/:groupId/familias",
                 element: <FamiliesPage />,
+              },
+              {
+                path: "docente/grupos/:groupId/preguntas",
+                element: <QuestionsPage />,
               },
               {
                 path: "docente/reportes/:groupId",

@@ -106,6 +106,14 @@ export default function GroupsPage() {
               <Link to={`/docente/reportes/${g.id}`} className="hover:underline">
                 Reporte del mes →
               </Link>
+              {g.level === "secondary" && (
+                <Link
+                  to={`/docente/grupos/${g.id}/preguntas`}
+                  className="hover:underline"
+                >
+                  Buzón de preguntas →
+                </Link>
+              )}
             </div>
           </section>
         ))}
