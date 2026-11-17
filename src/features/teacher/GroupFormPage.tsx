@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router";
+import { useTranslation } from "react-i18next";
+import { t as tr } from "@/i18n";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { PostgrestError } from "@supabase/supabase-js";
 import { ArrowLeft } from "lucide-react";
@@ -13,39 +15,27 @@ import { usePageTitle } from "@/lib/usePageTitle";
 
 // MVP scope: the grades that have lessons
 const OFFERS = [
-  { key: "p3", level: "primary", grade: 3, label: "3.º grado · primaria" },
-  { key: "s1", level: "secondary", grade: 1, label: "1.er año · secundaria" },
+  { key: "p3", level: "primary", grade: 3, labelKey: "groupForm.offerP3" },
+  { key: "s1", level: "secondary", grade: 1, labelKey: "groupForm.offerS1" },
 ] as const;
 
-const WEEKDAYS: [number, string][] = [
-  [1, "Lunes"],
-  [2, "Martes"],
-  [3, "Miércoles"],
-  [4, "Jueves"],
-  [5, "Viernes"],
-  [6, "Sábado"],
-];
-const LANGS = [
-  ["es", "Español"],
-  ["en", "Inglés"],
-  ["miq", "Miskito"],
-] as const;
+const WEEKDAYS = [1, 2, 3, 4, 5, 6] as const;
+const LANGS = ["es", "en", "miq"] as const;
 const SECTIONS = "ABCDEFGHIJ".split("");
 
-type Lang = (typeof LANGS)[number][0];
+type Lang = (typeof LANGS)[number];
 
 function groupError(e: PostgrestError): string {
-  if (e.code === "23505")
-    return "Ya existe un grupo con ese grado y sección en tu escuela este año.";
-  if (e.code === "42501") return "No tenés permiso para hacer este cambio.";
-  if (e.code === "23514")
-    return "Revisá los datos: algo no cumple las reglas del grupo.";
-  return "No pudimos guardar el grupo. Intentá de nuevo.";
+  if (e.code === "23505") return tr("groupForm.errors.duplicate");
+  if (e.code === "42501") return tr("common.noPermission");
+  if (e.code === "23514") return tr("groupForm.errors.rules");
+  return tr("groupForm.errors.generic");
 }
 
 export default function GroupFormPage() {
+  const { t } = useTranslation();
   const { groupId } = useParams();
-  usePageTitle(groupId ? "Editar grupo" : "Nuevo grupo");
+  usePageTitle(groupId ? t("groupForm.editTitle") : t("groups.new"));
   const editing = !!groupId;
   const navigate = useNavigate();
   const qc = useQueryClient();
@@ -111,13 +101,13 @@ export default function GroupFormPage() {
   if (editing && !current)
     return (
       <div className="p-5 lg:p-10">
-        <ErrorCard message="No encontramos ese grupo." />
+        <ErrorCard message={t("groupForm.notFound")} />
       </div>
     );
   if (!editing && !school)
     return (
       <div className="p-5 lg:p-10">
-        <ErrorCard message="Tu cuenta no está unida a una escuela." />
+        <ErrorCard message={t("groupForm.noSchool")} />
       </div>
     );
 
@@ -129,13 +119,13 @@ export default function GroupFormPage() {
       <div className="mb-4 flex items-center gap-2">
         <Link
           to="/docente/grupos"
-          aria-label="Volver"
+          aria-label={t("common.back")}
           className="rounded-full p-2 hover:bg-white"
         >
           <ArrowLeft size={22} />
         </Link>
         <h1 className="text-2xl font-extrabold">
-          {editing ? `Editar ${groupLabel(current!)}` : "Nuevo grupo"}
+          {editing ? t("groups.editAria", { group: groupLabel(current!) }) : t("groups.new")}
         </h1>
       </div>
 
@@ -150,7 +140,7 @@ export default function GroupFormPage() {
           <>
             {(schools.data?.length ?? 0) > 1 && (
               <label className="block text-sm font-bold">
-                Escuela
+                {t("groupForm.school")}
                 <select
                   value={school}
                   onChange={(e) => setSchoolId(e.target.value)}
@@ -165,7 +155,7 @@ export default function GroupFormPage() {
               </label>
             )}
             <fieldset>
-              <legend className="text-sm font-bold">Grado</legend>
+              <legend className="text-sm font-bold">{t("groupForm.grade")}</legend>
               <div className="mt-1 grid gap-2 sm:grid-cols-2">
                 {OFFERS.map((o) => (
                   <button
@@ -175,16 +165,16 @@ export default function GroupFormPage() {
                     aria-pressed={offer === o.key}
                     className={`rounded-2xl border-2 px-4 py-3 text-left font-bold ${offer === o.key ? "border-azul bg-azul-suave text-azul" : "border-linea"}`}
                   >
-                    {o.label}
+                    {t(o.labelKey)}
                   </button>
                 ))}
               </div>
               <p className="mt-1 text-xs text-tinta/60">
-                Por ahora Pío tiene lecciones para estos dos grados.
+                {t("groupForm.gradeHint")}
               </p>
             </fieldset>
             <label className="block text-sm font-bold">
-              Sección
+              {t("groupForm.section")}
               <select
                 value={section}
                 onChange={(e) => setSection(e.target.value)}
@@ -201,39 +191,38 @@ export default function GroupFormPage() {
         )}
 
         <label className="block text-sm font-bold">
-          Día de la clase de Siento y Crezco
+          {t("groupForm.weekday")}
           <select
             value={day}
             onChange={(e) => setWeekday(Number(e.target.value))}
             className={select}
           >
-            {WEEKDAYS.map(([n, label]) => (
+            {WEEKDAYS.map((n) => (
               <option key={n} value={n}>
-                {label}
+                {t(`weekdayName.${n}`)}
               </option>
             ))}
           </select>
           <span className="mt-1 block text-xs font-normal text-tinta/60">
-            Pío propone la fecha límite de cada lección según este día.
+            {t("groupForm.weekdayHint")}
           </span>
         </label>
 
         <label className="block text-sm font-bold">
-          Lengua del grupo
+          {t("groupForm.language")}
           <select
             value={lang}
             onChange={(e) => setLanguage(e.target.value as Lang)}
             className={select}
           >
-            {LANGS.map(([v, label]) => (
+            {LANGS.map((v) => (
               <option key={v} value={v}>
-                {label}
+                {t(`language.${v}`)}
               </option>
             ))}
           </select>
           <span className="mt-1 block text-xs font-normal text-tinta/60">
-            Se usa para las lecciones y la página de las familias. Cada
-            estudiante puede cambiar la suya en la app.
+            {t("groupForm.languageHint")}
           </span>
         </label>
 
@@ -252,10 +241,10 @@ export default function GroupFormPage() {
           className="rounded-full bg-azul py-3.5 font-display text-lg font-bold text-white disabled:opacity-60"
         >
           {save.isPending
-            ? "Guardando…"
+            ? t("common.saving")
             : editing
-              ? "Guardar cambios"
-              : "Crear grupo"}
+              ? t("common.saveChanges")
+              : t("groupForm.create")}
         </button>
       </form>
     </div>

@@ -7,5 +7,22 @@
     "anger": "Kupia babaikra",
     "fear": "Sibrin",
     "calm": "Sap takaia"
+  },
+  "lesson": {
+    "stepKind": {
+      "calm": "Sap takaia"
+    }
+  },
+  "progress": {
+    "title": "Pawanka"
+  },
+  "report": {
+    "meta": {
+      "month": "Kâti"
+    }
+  },
+  "sheet": {
+    "yes": "Ao",
+    "no": "Apia"
   }
 }

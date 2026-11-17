@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { ArrowLeft, CheckCircle2, EyeOff, Inbox, RotateCcw, ShieldQuestion } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { ErrorCard } from '@/components/ui/Card'
@@ -10,11 +11,7 @@ import { usePageTitle } from '@/lib/usePageTitle'
 
 type Status = 'new' | 'answered' | 'hidden'
 
-const TABS: { key: Status; label: string }[] = [
-  { key: 'new', label: 'Nuevas' },
-  { key: 'answered', label: 'Respondidas' },
-  { key: 'hidden', label: 'Ocultas' },
-]
+const TABS: Status[] = ['new', 'answered', 'hidden']
 
 function useQuestions(groupId: string | undefined) {
   return useQuery({
@@ -34,7 +31,8 @@ function useQuestions(groupId: string | undefined) {
 }
 
 export default function QuestionsPage() {
-  usePageTitle('Buzón de preguntas')
+  const { t } = useTranslation()
+  usePageTitle(t('groups.questions'))
   const { groupId } = useParams()
   const qc = useQueryClient()
   const groups = useMyGroups()
@@ -51,7 +49,7 @@ export default function QuestionsPage() {
   })
 
   if (groups.isLoading) return <div className="m-5 h-96 animate-pulse rounded-card bg-linea lg:m-10" />
-  if (!group) return <div className="p-5 lg:p-10"><ErrorCard message="No encontramos el grupo." /></div>
+  if (!group) return <div className="p-5 lg:p-10"><ErrorCard message={t('groupForm.notFound')} /></div>
 
   const all = questions.data ?? []
   const list = all.filter((q) => q.status === tab)
@@ -60,9 +58,9 @@ export default function QuestionsPage() {
   return (
     <div className="mx-auto max-w-2xl px-5 pb-10 pt-4 lg:pt-8">
       <div className="mb-4 flex items-center gap-2">
-        <Link to="/docente/grupos" aria-label="Volver" className="rounded-full p-2 hover:bg-white"><ArrowLeft size={22} /></Link>
+        <Link to="/docente/grupos" aria-label={t('common.back')} className="rounded-full p-2 hover:bg-white"><ArrowLeft size={22} /></Link>
         <div>
-          <h1 className="text-2xl font-extrabold">Buzón de preguntas</h1>
+          <h1 className="text-2xl font-extrabold">{t('groups.questions')}</h1>
           <p className="text-sm text-tinta/60">{groupLabel(group)}</p>
         </div>
       </div>
@@ -70,32 +68,32 @@ export default function QuestionsPage() {
       <div className="mb-4 flex gap-3 rounded-2xl bg-azul-suave p-4 text-sm text-azul">
         <ShieldQuestion size={20} className="shrink-0" />
         <div>
-          <p className="font-bold">Las preguntas son anónimas: Pío no guarda quién las escribió, ni a qué hora.</p>
-          <p className="mt-1">Respondelas en clase para todo el grupo. Si alguna te preocupa, hablá con orientación y tratá el tema con el grupo, sin buscar quién la escribió.</p>
+          <p className="font-bold">{t('questions.anonTitle')}</p>
+          <p className="mt-1">{t('questions.anonText')}</p>
         </div>
       </div>
 
       {group.level !== 'secondary' && (
-        <p className="rounded-2xl bg-arena px-4 py-3 text-sm">El buzón de preguntas anónimas es para secundaria.</p>
+        <p className="rounded-2xl bg-arena px-4 py-3 text-sm">{t('questions.secondaryOnly')}</p>
       )}
 
       <div role="tablist" className="mb-4 grid grid-cols-3 rounded-full bg-white p-1 text-sm font-bold">
-        {TABS.map((t) => (
-          <button key={t.key} role="tab" aria-selected={tab === t.key} onClick={() => setTab(t.key)}
-            className={`rounded-full py-2 ${tab === t.key ? 'bg-azul text-white' : 'text-tinta/60'}`}>
-            {t.label} ({count(t.key)})
+        {TABS.map((k) => (
+          <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
+            className={`rounded-full py-2 ${tab === k ? 'bg-azul text-white' : 'text-tinta/60'}`}>
+            {t(`questions.tab.${k}`)} ({count(k)})
           </button>
         ))}
       </div>
 
       {questions.isLoading && <div className="h-40 animate-pulse rounded-card bg-linea" />}
-      {questions.error && <ErrorCard message="No pudimos cargar el buzón." onRetry={() => questions.refetch()} />}
-      {setStatus.error && <p role="alert" className="mb-3 rounded-2xl bg-rosa-suave px-4 py-3 text-sm font-bold text-rosa-profundo">No se pudo cambiar el estado.</p>}
+      {questions.error && <ErrorCard message={t('questions.loadError')} onRetry={() => questions.refetch()} />}
+      {setStatus.error && <p role="alert" className="mb-3 rounded-2xl bg-rosa-suave px-4 py-3 text-sm font-bold text-rosa-profundo">{t('questions.statusError')}</p>}
 
       {questions.data && list.length === 0 && (
         <div className="flex flex-col items-center gap-2 rounded-card border border-linea bg-white p-8 text-center">
           <Inbox size={32} className="text-tinta/30" />
-          <p className="font-bold">{tab === 'new' ? 'No hay preguntas nuevas.' : tab === 'answered' ? 'Todavía no marcaste preguntas como respondidas.' : 'No hay preguntas ocultas.'}</p>
+          <p className="font-bold">{t(`questions.empty.${tab}`)}</p>
         </div>
       )}
 
@@ -103,26 +101,26 @@ export default function QuestionsPage() {
         {list.map((q) => (
           <li key={q.id} className="rounded-card border border-linea bg-white p-4">
             <p className="text-xs font-extrabold uppercase tracking-wider text-tinta/50">
-              {shortDate(q.created_on)}{q.lessons ? ` · Semana ${q.lessons.week} · ${pickText(q.lessons.title)}` : ''}
+              {shortDate(q.created_on)}{q.lessons ? ` · ${t('library.week', { week: q.lessons.week })} · ${pickText(q.lessons.title)}` : ''}
             </p>
             <p className="mt-2 text-lg font-semibold">“{q.body}”</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {q.status !== 'answered' && (
                 <button onClick={() => setStatus.mutate({ id: q.id, status: 'answered' })} disabled={setStatus.isPending}
                   className="flex items-center gap-1.5 rounded-full bg-azul px-4 py-2 text-sm font-bold text-white">
-                  <CheckCircle2 size={16} /> La respondí en clase
+                  <CheckCircle2 size={16} /> {t('questions.answered')}
                 </button>
               )}
               {q.status === 'new' && (
                 <button onClick={() => setStatus.mutate({ id: q.id, status: 'hidden' })} disabled={setStatus.isPending}
                   className="flex items-center gap-1.5 rounded-full border-2 border-linea px-4 py-2 text-sm font-bold">
-                  <EyeOff size={16} /> Ocultar
+                  <EyeOff size={16} /> {t('questions.hide')}
                 </button>
               )}
               {q.status !== 'new' && (
                 <button onClick={() => setStatus.mutate({ id: q.id, status: 'new' })} disabled={setStatus.isPending}
                   className="flex items-center gap-1.5 rounded-full border-2 border-linea px-4 py-2 text-sm font-bold">
-                  <RotateCcw size={16} /> Volver a nuevas
+                  <RotateCcw size={16} /> {t('questions.backToNew')}
                 </button>
               )}
             </div>

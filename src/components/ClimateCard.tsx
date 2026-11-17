@@ -1,14 +1,16 @@
+import { useTranslation } from 'react-i18next'
 import { Card } from '@/components/ui/Card'
 import { EmotionDrop } from '@/components/EmotionDrop'
 import { EMOTIONS } from '@/lib/emotions'
 import type { Climate } from '@/features/teacher/api'
 
 export function ClimateCard({ climate, title, aside }: { climate: Climate; title: string; aside?: string }) {
+  const { t } = useTranslation()
   return (
     <Card title={title} aside={aside}>
       {climate.hidden ? (
         <p className="text-sm text-tinta/70">
-          Se muestra cuando al menos {climate.min_respondents} estudiantes hagan su check-in en la semana. Así nadie queda identificado.
+          {t('climate.hidden', { min: climate.min_respondents })}
         </p>
       ) : (
         <>
@@ -22,7 +24,7 @@ export function ClimateCard({ climate, title, aside }: { climate: Climate; title
             ))}
           </div>
           <p className="mt-3 text-xs text-tinta/60">
-            {climate.checkins} check-ins{climate.declined > 0 && ` · ${climate.declined} prefirieron no decirlo`} · sin nombres
+            {t('climate.checkins', { count: climate.checkins })}{climate.declined > 0 && ` · ${t('climate.declined', { count: climate.declined })}`} · {t('climate.noNames')}
           </p>
         </>
       )}
@@ -32,7 +34,8 @@ export function ClimateCard({ climate, title, aside }: { climate: Climate; title
 
 // Compact version for a table row: one colored bar
 export function ClimateBar({ climate }: { climate: Climate }) {
-  if (climate.hidden) return <span className="text-xs text-tinta/50">Menos de 3 respuestas</span>
+  const { t } = useTranslation()
+  if (climate.hidden) return <span className="text-xs text-tinta/50">{t('climate.fewAnswers', { min: climate.min_respondents })}</span>
   return (
     <div className="flex h-3 w-full overflow-hidden rounded-full bg-linea" role="img"
       aria-label={climate.distribution.map((d) => `${EMOTIONS[d.emotion].label} ${d.pct}%`).join(', ')}>

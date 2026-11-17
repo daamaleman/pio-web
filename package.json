@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "i18n:check": "node scripts/i18n-check.mjs",
     "i18n:export": "node scripts/i18n-export.mjs",
     "i18n:glossary": "node scripts/i18n-glossary.mjs",
     "i18n:import": "node scripts/i18n-import.mjs translations.csv",

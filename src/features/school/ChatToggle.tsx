@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Trans, useTranslation } from "react-i18next";
 import { MessageCircleHeart } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -30,6 +31,7 @@ export function ChatToggle({
   enabled: boolean;
   canEdit: boolean;
 }) {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [confirm, setConfirm] = useState(false);
   const set = useMutation({
@@ -53,9 +55,9 @@ export function ChatToggle({
       <div className="flex items-center gap-3">
         <MessageCircleHeart size={20} className="text-azul" />
         <div className="flex-1 text-sm">
-          <p className="font-bold">Chat «Pío te escucha»</p>
+          <p className="font-bold">{t("chat.title")}</p>
           <p className="text-xs text-tinta/60">
-            {enabled ? "Activo" : "Desactivado"}
+            {enabled ? t("chat.on") : t("chat.off")}
           </p>
         </div>
         {canEdit && !confirm && (
@@ -64,17 +66,14 @@ export function ChatToggle({
             disabled={set.isPending}
             className={`rounded-full px-4 py-2 text-sm font-bold ${enabled ? "border-2 border-linea bg-white" : "bg-azul text-white"}`}
           >
-            {enabled ? "Desactivar" : "Activar"}
+            {enabled ? t("chat.disable") : t("chat.enable")}
           </button>
         )}
       </div>
       {confirm && (
         <div className="mt-3 text-sm">
           <p>
-            ¿Activar el chat para <b>{groupName}</b>? Solo lo usan estudiantes
-            con permiso de su familia que acepten los términos. Si Pío detecta
-            un riesgo, avisa a orientación y dirección; nadie lee las
-            conversaciones.
+            <Trans i18nKey="chat.confirm" values={{ group: groupName }} components={{ b: <b /> }} />
           </p>
           <div className="mt-2 flex gap-2">
             <button
@@ -82,20 +81,20 @@ export function ChatToggle({
               disabled={set.isPending}
               className="flex-1 rounded-full bg-azul py-2 font-bold text-white disabled:opacity-60"
             >
-              Sí, activar
+              {t("chat.yesEnable")}
             </button>
             <button
               onClick={() => setConfirm(false)}
               className="flex-1 rounded-full border-2 border-linea bg-white py-2 font-bold"
             >
-              Cancelar
+              {t("common.cancel")}
             </button>
           </div>
         </div>
       )}
       {set.error && (
         <p role="alert" className="mt-2 text-sm font-bold text-rosa-profundo">
-          No se pudo cambiar. Solo dirección puede hacerlo.
+          {t("chat.error")}
         </p>
       )}
     </div>

@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import { t as tr } from '@/i18n'
 import type { PostgrestError } from '@supabase/supabase-js'
 import { ArrowLeft, CalendarDays, Check } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
@@ -15,16 +17,17 @@ import { useSelectedGroup } from './useSelectedGroup'
 import { usePageTitle } from '@/lib/usePageTitle'
 
 function assignError(e: PostgrestError): string {
-  if (e.code === '23505') return 'Esta lección ya está asignada a este grupo.'
-  if (e.code === '23514' && e.message.includes('assignments_dates')) return 'La fecha límite no puede ser antes de la clase.'
-  if (e.code === '23514') return 'El mensaje puede tener como máximo 280 caracteres.'
-  if (e.code === '42501') return 'No tenés permiso para asignar en este grupo.'
-  if (e.code === 'P0001') return `No se pudo asignar: ${e.message}`
-  return 'No pudimos asignar la lección. Revisá tu conexión e intentá de nuevo.'
+  if (e.code === '23505') return tr('assign.errors.duplicate')
+  if (e.code === '23514' && e.message.includes('assignments_dates')) return tr('assign.errors.dates')
+  if (e.code === '23514') return tr('assign.errors.messageLength')
+  if (e.code === '42501') return tr('assign.errors.permission')
+  if (e.code === 'P0001') return tr('assign.errors.business', { message: e.message })
+  return tr('assign.errors.generic')
 }
 
 export default function AssignPage() {
-  usePageTitle('Asignar lección')
+  const { t } = useTranslation()
+  usePageTitle(t('assign.title'))
   const { lessonId } = useParams()
   const navigate = useNavigate()
   const qc = useQueryClient()
@@ -70,12 +73,12 @@ export default function AssignPage() {
         qc.invalidateQueries({ queryKey: ['group-overview', group!.id] }),
         qc.invalidateQueries({ queryKey: ['group-assignments', group!.id] }),
       ])
-      navigate('/docente', { state: { flash: `Asignaste «${pickText(lesson!.title)}» a ${count} estudiantes.` } })
+      navigate('/docente', { state: { flash: t('assign.flash', { title: pickText(lesson!.title), count }) } })
     },
   })
 
   const back = (
-    <Link to="/docente/lecciones" aria-label="Volver" className="rounded-full p-2 hover:bg-white">
+    <Link to="/docente/lecciones" aria-label={t('common.back')} className="rounded-full p-2 hover:bg-white">
       <ArrowLeft size={22} />
     </Link>
   )
@@ -87,7 +90,7 @@ export default function AssignPage() {
     return (
       <div className="p-5 lg:p-10">
         {back}
-        <ErrorCard message="No encontramos esa lección para este grupo." />
+        <ErrorCard message={t('assign.notFound')} />
       </div>
     )
   }
@@ -99,18 +102,18 @@ export default function AssignPage() {
     <div className="mx-auto max-w-xl px-5 pb-10 pt-4 lg:pt-8">
       <div className="mb-4 flex items-center gap-2">
         {back}
-        <h1 className="text-2xl font-extrabold">Asignar lección</h1>
+        <h1 className="text-2xl font-extrabold">{t('assign.title')}</h1>
       </div>
 
       {/* 1. Preview (Figma pink card) */}
       <section className="relative overflow-hidden rounded-card bg-rosa p-5 text-white">
         <p className="text-xs font-extrabold uppercase tracking-wider text-white/85">
-          {e ? EMOTIONS[e].label : 'Lección'} · Semana {lesson.week}
+          {e ? EMOTIONS[e].label : t('library.lesson')} · {t('library.week', { week: lesson.week })}
         </p>
         <h2 className="mt-1 max-w-[70%] text-2xl font-extrabold leading-tight">{title}</h2>
         <div className="mt-3 flex flex-wrap gap-2 text-xs font-bold">
           {lesson.duration_min && <span className="rounded-full bg-white/25 px-3 py-1">{lesson.duration_min} min</span>}
-          <span className="rounded-full bg-white/25 px-3 py-1">{lesson.parts_count} partes</span>
+          <span className="rounded-full bg-white/25 px-3 py-1">{t('library.parts', { count: lesson.parts_count })}</span>
           <span className="rounded-full bg-white/25 px-3 py-1">{groupLabel(group)}</span>
         </div>
         <img src="/pio-mascota.png" alt="" className="absolute -bottom-2 right-2 h-24 w-24" />
@@ -118,9 +121,9 @@ export default function AssignPage() {
 
       {existing ? (
         <div className="mt-5 rounded-card bg-azul-suave p-5">
-          <p className="font-bold text-azul">Esta lección ya está asignada (vence {shortDate(existing.due_date)}).</p>
+          <p className="font-bold text-azul">{t('assign.already', { date: shortDate(existing.due_date) })}</p>
           <Link to={`/docente/asignaciones/${existing.id}`} className="mt-2 inline-block font-bold underline">
-            Ver avance
+            {t('library.seeProgress')}
           </Link>
         </div>
       ) : (
@@ -133,13 +136,13 @@ export default function AssignPage() {
         >
           {/* 2. Who */}
           <fieldset>
-            <legend className="mb-2 text-xs font-extrabold uppercase tracking-wider text-tinta/60">¿A quién?</legend>
+            <legend className="mb-2 text-xs font-extrabold uppercase tracking-wider text-tinta/60">{t('assign.who')}</legend>
             <div className="flex flex-col gap-2">
               <Option checked={target === 'all'} onClick={() => setTarget('all')}>
-                Todo el grupo · {groupLabel(group)} <span className="ml-auto text-tinta/50">{total}</span>
+                {t('assign.wholeGroup', { group: groupLabel(group) })} <span className="ml-auto text-tinta/50">{total}</span>
               </Option>
               <Option checked={target === 'some'} onClick={() => setTarget('some')}>
-                Estudiantes específicos {target === 'some' && <span className="ml-auto text-tinta/50">{picked.size}</span>}
+                {t('assign.specific')} {target === 'some' && <span className="ml-auto text-tinta/50">{picked.size}</span>}
               </Option>
             </div>
             {target === 'some' && (
@@ -178,7 +181,7 @@ export default function AssignPage() {
           {/* 3. Due date */}
           <div>
             <label htmlFor="due" className="mb-2 block text-xs font-extrabold uppercase tracking-wider text-tinta/60">
-              Fecha límite
+              {t('assign.dueDate')}
             </label>
             <div className="flex items-center gap-3 rounded-2xl border-2 border-linea bg-white px-4 py-3 focus-within:border-azul">
               <CalendarDays size={18} className="text-tinta/60" />
@@ -192,14 +195,14 @@ export default function AssignPage() {
               />
             </div>
             <p className="mt-1 text-xs text-tinta/60">
-              Clase del {shortDate(dates.classDate)}. Aparece en «Mi semana» del estudiante.
+              {t('assign.dueHint', { date: shortDate(dates.classDate) })}
             </p>
           </div>
 
           {/* 4. Message */}
           <div>
             <label htmlFor="msg" className="mb-2 block text-xs font-extrabold uppercase tracking-wider text-tinta/60">
-              Mensaje para tus estudiantes (opcional)
+              {t('assign.message')}
             </label>
             <textarea
               id="msg"
@@ -207,7 +210,7 @@ export default function AssignPage() {
               maxLength={280}
               rows={3}
               onChange={(ev) => setMessage(ev.target.value)}
-              placeholder="¡Hola, chavalos! Esta semana practicamos…"
+              placeholder={t('assign.messagePlaceholder')}
               className="w-full rounded-2xl border-2 border-linea bg-white px-4 py-3 outline-none focus:border-azul"
             />
             <p className="text-right text-xs text-tinta/50">{message.length}/280</p>
@@ -216,15 +219,15 @@ export default function AssignPage() {
           {/* 5. Toggles */}
           <div className="rounded-2xl border border-linea bg-white px-4 py-1">
             <Toggle
-              label="Avisar a las familias"
-              hint="El reto en casa aparece en la página del QR del grupo"
+              label={t('assign.notifyFamilies')}
+              hint={t('assign.notifyFamiliesHint')}
               checked={notifyFamilies}
               onChange={setNotifyFamilies}
             />
             <div className="border-t border-linea" />
             <Toggle
-              label="Recordatorio un día antes"
-              hint="Solo a quienes no han terminado, nunca de noche"
+              label={t('assign.remind')}
+              hint={t('assign.remindHint')}
               checked={remind}
               onChange={setRemind}
             />
@@ -241,7 +244,7 @@ export default function AssignPage() {
             disabled={mutation.isPending || count === 0}
             className="rounded-full bg-azul py-3.5 font-display text-lg font-bold text-white disabled:opacity-50"
           >
-            {mutation.isPending ? 'Asignando…' : `Asignar a ${count} ${count === 1 ? 'estudiante' : 'estudiantes'}`}
+            {mutation.isPending ? t('assign.assigning') : t('assign.submit', { count })}
           </button>
         </form>
       )}

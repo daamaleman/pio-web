@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { FunctionsHttpError } from "@supabase/supabase-js";
 import {
   AlertTriangle,
@@ -62,7 +63,8 @@ async function functionErrorCode(error: unknown): Promise<string> {
 }
 
 export default function ImportStudentsPage() {
-  usePageTitle("Agregar estudiantes");
+  const { t } = useTranslation();
+  usePageTitle(t("students.addMany"));
   const { groupId } = useParams();
   const qc = useQueryClient();
   const groups = useMyGroups();
@@ -119,7 +121,7 @@ export default function ImportStudentsPage() {
   if (!group)
     return (
       <div className="p-5 lg:p-10">
-        <ErrorCard message="No encontramos el grupo." />
+        <ErrorCard message={t("groupForm.notFound")} />
       </div>
     );
 
@@ -132,18 +134,14 @@ export default function ImportStudentsPage() {
       <div className="mx-auto max-w-3xl px-5 pb-10 pt-4 lg:pt-8">
         <div className="mb-4 print:hidden">
           <h1 className="text-2xl font-extrabold">
-            Listo: {r.created.length}{" "}
-            {r.created.length === 1
-              ? "estudiante agregado"
-              : "estudiantes agregados"}
+            {t("students.import.done", { count: r.created.length })}
           </h1>
           <p className="mt-1 rounded-2xl bg-[#FFF3D1] px-4 py-3 text-sm font-bold">
-            Imprimí o anotá los PIN ahora: después no se pueden volver a ver. Si
-            alguien pierde el suyo, generale uno nuevo.
+            {t("students.import.printNow")}
           </p>
           {r.errors.length > 0 && (
             <div className="mt-3 rounded-2xl bg-rosa-suave p-4 text-sm text-rosa-profundo">
-              <p className="font-bold">No se agregaron:</p>
+              <p className="font-bold">{t("students.import.notAdded")}</p>
               <ul className="mt-1 list-inside list-disc">
                 {r.errors.map((e) => (
                   <li key={`${e.row}-${e.display_name}`}>
@@ -158,13 +156,13 @@ export default function ImportStudentsPage() {
               onClick={() => window.print()}
               className="flex flex-1 items-center justify-center gap-2 rounded-full bg-azul py-3 font-bold text-white"
             >
-              <Printer size={18} /> Imprimir tarjetas
+              <Printer size={18} /> {t("students.import.printCards")}
             </button>
             <Link
               to={back}
               className="flex flex-1 items-center justify-center rounded-full border-2 border-linea bg-white py-3 font-bold"
             >
-              Ver estudiantes
+              {t("teacherHome.seeStudents")}
             </Link>
           </div>
         </div>
@@ -190,15 +188,15 @@ export default function ImportStudentsPage() {
       <div className="mb-4 flex items-center gap-2">
         <Link
           to={back}
-          aria-label="Volver"
+          aria-label={t("common.back")}
           className="rounded-full p-2 hover:bg-white"
         >
           <ArrowLeft size={22} />
         </Link>
         <div>
-          <h1 className="text-2xl font-extrabold">Agregar estudiantes</h1>
+          <h1 className="text-2xl font-extrabold">{t("students.addMany")}</h1>
           <p className="text-sm text-tinta/60">
-            {groupLabel(group)} · hasta {MAX_ROWS} por vez
+            {groupLabel(group)} · {t("students.import.upTo", { max: MAX_ROWS })}
           </p>
         </div>
       </div>
@@ -207,10 +205,10 @@ export default function ImportStudentsPage() {
         <FileSpreadsheet size={28} className="text-azul" />
         <span className="flex-1">
           <span className="block font-bold">
-            {fileName ?? "Subir Excel o CSV"}
+            {fileName ?? t("students.import.upload")}
           </span>
           <span className="block text-xs text-tinta/60">
-            Columna A: nombre y apellido. Columna B (opcional): PIN.
+            {t("students.import.columns")}
           </span>
         </span>
         <input
@@ -229,7 +227,7 @@ export default function ImportStudentsPage() {
       {!fileRows && (
         <>
           <p className="my-3 text-center text-sm font-bold text-tinta/50">
-            o pegá la lista, un estudiante por línea
+            {t("students.import.orPaste")}
           </p>
           <textarea
             value={text}
@@ -248,16 +246,16 @@ export default function ImportStudentsPage() {
           }}
           className="mt-2 text-sm font-bold text-azul underline"
         >
-          Quitar archivo
+          {t("students.import.removeFile")}
         </button>
       )}
 
       {preview.length > 0 && (
         <section className="mt-5">
           <p className="mb-2 text-sm font-bold text-tinta/60">
-            Vista previa: {toSend.length} se van a agregar
+            {t("students.import.preview", { count: toSend.length })}
             {preview.length > toSend.length &&
-              ` · ${preview.length - toSend.length} con problemas`}
+              ` · ${t("students.import.withProblems", { count: preview.length - toSend.length })}`}
           </p>
           <ul className="overflow-hidden rounded-card border border-linea bg-white text-sm">
             {preview.map((r) => (
@@ -270,7 +268,7 @@ export default function ImportStudentsPage() {
                   <span
                     className={`font-bold ${r.problem ? "line-through opacity-60" : ""}`}
                   >
-                    {r.display_name || "(vacío)"}
+                    {r.display_name || t("students.import.empty")}
                   </span>
                   {r.problem && (
                     <span className="block text-xs font-bold text-rosa-profundo">
@@ -284,7 +282,7 @@ export default function ImportStudentsPage() {
                   )}
                 </span>
                 <span className="shrink-0 text-tinta/60">
-                  {r.pin ? `PIN ${r.pin}` : "PIN automático"}
+                  {r.pin ? `PIN ${r.pin}` : t("students.import.autoPin")}
                 </span>
               </li>
             ))}
@@ -298,10 +296,10 @@ export default function ImportStudentsPage() {
           className="mt-4 rounded-2xl bg-rosa-suave px-4 py-3 text-sm font-bold text-rosa-profundo"
         >
           {mutation.error.message === "FORBIDDEN"
-            ? "No tenés permiso para agregar estudiantes a este grupo."
+            ? t("students.import.forbidden")
             : mutation.error.message === "NETWORK"
-              ? "No pudimos conectar con el servidor. Revisá tu conexión."
-              : `No se pudo agregar (${mutation.error.message}).`}
+              ? t("common.network")
+              : t("students.import.failed", { code: mutation.error.message })}
         </p>
       )}
 
@@ -311,8 +309,8 @@ export default function ImportStudentsPage() {
         className="mt-5 w-full rounded-full bg-azul py-3.5 font-display text-lg font-bold text-white disabled:opacity-50"
       >
         {mutation.isPending
-          ? "Agregando…"
-          : `Agregar ${toSend.length} ${toSend.length === 1 ? "estudiante" : "estudiantes"}`}
+          ? t("students.import.adding")
+          : t("students.import.submit", { count: toSend.length })}
       </button>
     </div>
   );

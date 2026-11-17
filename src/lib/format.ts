@@ -1,5 +1,5 @@
 import type { Json } from "./database.types";
-import { locale, t } from '@/i18n'
+import { contentLang, locale, t } from '@/i18n'
 
 const TZ = "America/Managua";
 // "2026-11-15" in Nicaragua time (not UTC)
@@ -49,7 +49,7 @@ export function relativeDay(timestamp: string): string {
 }
 
 // Lesson titles come as { "es": "...", "en": "..." }
-export function pickText(value: Json | undefined, lang = "es"): string {
+export function pickText(value: Json | undefined, lang = contentLang()): string {
   if (typeof value === "string") return value;
   if (value && typeof value === "object" && !Array.isArray(value)) {
     const obj = value as Record<string, Json | undefined>;

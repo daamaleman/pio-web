@@ -178,7 +178,10 @@ pio-web/
 │  │  ├─ alerts/               # shared alerts screen
 │  │  ├─ school/               # school panel, staff, AI chat toggle
 │  │  ├─ wellbeing/            # self-assessment and polls
+│  │  ├─ reports/              # end-of-month report (Excel and PDF)
+│  │  ├─ admin/                # schools and lesson catalog
 │  │  └─ family/               # public family page
+│  ├─ i18n/                    # es.json · en.json · miq.json, glossary and Miskitu sources
 │  ├─ lib/
 │  │  ├─ supabase.ts           # the only Supabase client
 │  │  ├─ database.types.ts     # generated: npm run gen:types
@@ -216,6 +219,10 @@ npm run dev                    # http://localhost:5173
 | `npm run build` | Revisa los tipos (`tsc -b`) y genera `dist/` |
 | `npm run lint` | ESLint |
 | `npm run gen:types` | Regenera `src/lib/database.types.ts` desde staging. En Windows usar este script y no `>` de PowerShell (guarda en UTF-16) |
+| `npm run i18n:check` | Revisa que cada clave usada en el código exista en `es.json` y `en.json`, y que los dos tengan las mismas |
+| `npm run i18n:export` | Genera `translations.csv` (clave, es, en, miq) para que un traductor llene el miskitu |
+| `npm run i18n:import` | Lee `translations.csv` y escribe `miq.json` |
+| `npm run i18n:glossary` | Llena en `miq.json` las palabras del glosario con fuente (`glossary.miq.json`), sin pisar lo que ya está |
 
 <details>
 <summary><b>👥 Usuarios de demo</b></summary>
@@ -243,6 +250,20 @@ Cuando una pantalla necesita algo nuevo en la base:
 Si una columna o función no existe en la base, `npm run build` falla y dice cuál. Así los errores aparecen en tu compu, no en Netlify ni frente a una docente.
 
 Commits en inglés con [Conventional Commits](https://www.conventionalcommits.org/): `feat(web): …`, `fix(web): …`, `perf(web): …`.
+
+## 🌐 Idiomas
+
+Todo el texto del portal está en `src/i18n/` (unas 640 claves). Cada persona elige su idioma en **Yo**, y se guarda en su perfil.
+
+| Idioma | Estado |
+|---|---|
+| Español (`es`) | Completo. Es el idioma base y el respaldo de los demás |
+| Inglés (`en`) | Completo, para Bluefields |
+| Miskitu (`miq`) | Parcial: solo palabras con fuente (ver `MISKITU_FUENTES.md`). Lo que falta se ve en español. Las frases necesitan un traductor nativo con `i18n:export` / `i18n:import` |
+
+Lo impreso que va a las casas (QR del grupo, ficha para la familia) y la página pública de familias usan la **lengua del grupo**, no la del portal. Las lecciones toman el título y el contenido en la lengua del grupo si existe, y si no, en español.
+
+Para un texto nuevo: agregalo en `es.json` y `en.json` con la misma clave, usalo con `t('clave')` y corré `npm run i18n:check` antes del commit.
 
 ## 🎨 Diseño
 
@@ -303,12 +324,12 @@ Netlify publica solo **cada push a `main`**. La configuración está en el repo:
 - [x] Familias: permisos, fichas y ficha en papel
 - [x] Bienestar: autoevaluación y encuestas
 - [x] Plan del mes
-- [ ] Reportes de cierre de mes en Excel y PDF
-- [ ] Observaciones del docente por estudiante
-- [ ] Buzón de preguntas anónimas (secundaria)
-- [ ] Administración básica: escuelas y catálogo
-- [ ] Guía del docente por lección y materiales imprimibles
-- [ ] Portal en inglés para Bluefields
+- [x] Reportes de cierre de mes en Excel y PDF
+- [x] Observaciones del docente por estudiante
+- [x] Buzón de preguntas anónimas (secundaria)
+- [x] Administración básica: escuelas y catálogo
+- [x] Guía del docente por lección y materiales imprimibles
+- [x] Portal completo en español e inglés; miskitu parcial con fuentes
 - [ ] Correos con diseño de Pío en la nube (necesita SMTP propio)
 
 ## 👥 Equipo

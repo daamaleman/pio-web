@@ -1,6 +1,7 @@
 // Pío Excel template: every spreadsheet the portal downloads goes through here,
 // so they all share the same brand design.
 import type { Cell, PaperSize, Worksheet } from 'exceljs'
+import { t } from '@/i18n'
 
 const FONT = 'Calibri'
 const C = {
@@ -25,12 +26,13 @@ export type SheetSpec = {
   tabColor?: 'rosa' | 'azul'
 }
 
+// Compares against the labels in the current language (the report writes them with t())
 export function defaultTone(value: string | number | null): Tone {
   if (typeof value !== 'string') return null
-  if (value === 'Logrado' || value.startsWith('Completó')) return 'good'
-  if (value === 'En proceso') return 'mid'
-  if (value === 'Necesita apoyo') return 'bad'
-  if (value === 'Sin empezar' || value === 'No asignada' || value === '—') return 'muted'
+  if (value === t('report.result.achieved') || value.startsWith(t('report.status.completed'))) return 'good'
+  if (value === t('report.result.in_progress')) return 'mid'
+  if (value === t('report.result.needs_support')) return 'bad'
+  if (value === t('report.status.not_started') || value === t('report.notAssigned') || value === '—') return 'muted'
   return null
 }
 

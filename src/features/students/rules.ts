@@ -1,4 +1,5 @@
 import { norm } from '@/lib/format'
+import { t, tLabels } from '@/i18n'
 
 export const MAX_ROWS = 60
 
@@ -28,23 +29,16 @@ export function buildPreview(rows: { name: string; pin?: string }[], existing: s
     const pin = r.pin?.trim() || undefined
     const key = norm(display_name)
     const row: PreviewRow = { line: i + 1, display_name, pin }
-    if (display_name.length < 2 || display_name.length > 60) row.problem = 'El nombre debe tener de 2 a 60 caracteres.'
-    else if (seen.has(key)) row.problem = 'Está repetido en la lista.'
-    else if (taken.has(key)) row.problem = 'Ya existe en el grupo.'
+    if (display_name.length < 2 || display_name.length > 60) row.problem = t('students.rules.nameLength')
+    else if (seen.has(key)) row.problem = t('students.rules.repeated')
+    else if (taken.has(key)) row.problem = t('students.rules.exists')
     else if (pin && !validPin(pin, level))
-      row.problem = level === 'primary' ? 'El PIN deben ser 4 números del 1 al 9.' : 'El PIN deben ser 4 números.'
-    else if (display_name.split(' ').length > 2) row.warning = 'Más de dos palabras: en la app se ve largo. Mejor nombre y un apellido.'
+      row.problem = level === 'primary' ? t('students.rules.pinPrimary') : t('students.rules.pinSecondary')
+    else if (display_name.split(' ').length > 2) row.warning = t('students.rules.long')
     seen.add(key)
-    if (i >= MAX_ROWS) row.problem = `Máximo ${MAX_ROWS} estudiantes por carga.`
+    if (i >= MAX_ROWS) row.problem = t('students.rules.max', { max: MAX_ROWS })
     return row
   })
 }
 
-export const ROW_ERROR: Record<string, string> = {
-  INVALID_NAME: 'Nombre no válido.',
-  DUPLICATE_IN_LIST: 'Repetido en la lista.',
-  DUPLICATE_NAME: 'Ya existe en el grupo.',
-  INVALID_PIN_FORMAT: 'PIN no válido.',
-  GROUP_NOT_FOUND: 'El grupo no existe.',
-  INTERNAL_ERROR: 'Error del servidor. Intentá de nuevo con este nombre.',
-}
+export const ROW_ERROR = tLabels('students.rowError', ['INVALID_NAME', 'DUPLICATE_IN_LIST', 'DUPLICATE_NAME', 'INVALID_PIN_FORMAT', 'GROUP_NOT_FOUND', 'INTERNAL_ERROR'] as const) as Record<string, string>

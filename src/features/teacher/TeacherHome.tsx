@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router";
+import { useTranslation } from "react-i18next";
 import { Bell, BookOpen, ChevronDown } from "lucide-react";
 import { Card, ErrorCard } from "@/components/ui/Card";
 import { EmotionDrop } from "@/components/EmotionDrop";
@@ -35,7 +36,8 @@ function currentAssignment(
 }
 
 export default function TeacherHome() {
-  usePageTitle("Inicio");
+  const { t } = useTranslation();
+  usePageTitle(t("nav.home"));
   const groups = useMyGroups();
   const [group, selectGroup] = useSelectedGroup(groups.data);
   const overview = useGroupOverview(group?.id);
@@ -49,7 +51,7 @@ export default function TeacherHome() {
     return (
       <div className="p-5 lg:p-10">
         <ErrorCard
-          message="No pudimos cargar tus grupos."
+          message={t("teacherHome.groupsError")}
           onRetry={() => groups.refetch()}
         />
       </div>
@@ -59,9 +61,9 @@ export default function TeacherHome() {
     return (
       <div className="flex flex-col items-center gap-3 p-10 text-center">
         <img src="/pio-mascota.png" alt="" className="h-24 w-24" />
-        <h1 className="text-2xl font-bold">Todavía no tenés grupos</h1>
+        <h1 className="text-2xl font-bold">{t("teacherHome.noGroupsTitle")}</h1>
         <p className="text-tinta/70">
-          Cuando la dirección te asigne un grupo, aparecerá aquí.
+          {t("teacherHome.noGroupsText")}
         </p>
       </div>
     );
@@ -78,12 +80,12 @@ export default function TeacherHome() {
           <div className="min-w-0 flex-1">
             <p className="text-sm text-white/75">{greeting()},</p>
             <p className="truncate font-display text-xl font-bold">
-              Prof. {profile?.full_name ?? ""}
+              {t("teacherHome.prof", { name: profile?.full_name ?? "" })}
             </p>
           </div>
           <Link
             to="/docente/alertas"
-            aria-label="Alertas"
+            aria-label={t("nav.alerts")}
             className="relative rounded-full bg-white p-2.5 text-azul"
           >
             <Bell size={20} />
@@ -99,7 +101,7 @@ export default function TeacherHome() {
               <select
                 value={group?.id}
                 onChange={(e) => selectGroup(e.target.value)}
-                aria-label="Elegir grupo"
+                aria-label={t("common.chooseGroup")}
                 className="cursor-pointer appearance-none truncate bg-transparent py-2 pl-4 pr-9 outline-none"
               >
                 {groups.data.map((g) => (
@@ -137,7 +139,7 @@ export default function TeacherHome() {
       {overview.error && (
         <div className="px-5 pt-5 lg:px-10">
           <ErrorCard
-            message="No pudimos cargar el panel del grupo."
+            message={t("teacherHome.overviewError")}
             onRetry={() => overview.refetch()}
           />
         </div>
@@ -154,6 +156,7 @@ function PanelBody({
   data: GroupOverview;
   alerts: { student_id: string; reason_code: string }[];
 }) {
+  const { t } = useTranslation();
   const current = currentAssignment(data.assignments);
   const today = todayISO();
   const streak = new Set(
@@ -175,21 +178,20 @@ function PanelBody({
         <div className="grid grid-cols-3 gap-3">
           <Stat
             value={current ? `${current.completed}/${current.targeted}` : "—"}
-            label="terminaron"
+            label={t("teacherHome.finished")}
           />
           <Stat
             value={String(data.assignments.length)}
-            label={data.assignments.length === 1 ? "tarea" : "tareas"}
+            label={t("teacherHome.tasks", { count: data.assignments.length })}
           />
-          <Stat value={String(data.badges_earned)} label="sellos" />
+          <Stat value={String(data.badges_earned)} label={t("teacherHome.badges")} />
         </div>
 
         {/* Group climate */}
-        <Card title="Cómo se sintió el grupo" aside="Esta semana">
+        <Card title={t("climate.title")} aside={t("climate.thisWeek")}>
           {climate.hidden ? (
             <p className="text-sm text-tinta/70">
-              Se muestra cuando al menos {climate.min_respondents} estudiantes
-              hagan su check-in esta semana. Así nadie queda identificado.
+              {t("climate.hidden", { min: climate.min_respondents })}
             </p>
           ) : (
             <>
@@ -208,10 +210,10 @@ function PanelBody({
                 ))}
               </div>
               <p className="mt-3 text-xs text-tinta/60">
-                {climate.checkins} check-ins
+                {t("climate.checkins", { count: climate.checkins })}
                 {climate.declined > 0 &&
-                  ` · ${climate.declined} prefirieron no decirlo`}{" "}
-                · sin nombres
+                  ` · ${t("climate.declined", { count: climate.declined })}`}
+                {` · ${t("climate.noNames")}`}
               </p>
             </>
           )}
@@ -225,28 +227,23 @@ function PanelBody({
               {streak > 0 && (
                 <>
                   <p className="font-bold">
-                    {streak === 1
-                      ? "1 estudiante podría necesitar apoyo"
-                      : `${streak} estudiantes podrían necesitar apoyo`}
+                    {t("teacherHome.streak", { count: streak })}
                   </p>
                   <p className="mt-0.5 text-tinta/75">
-                    Marcaron tristeza, miedo o enojo 3 días o más esta semana.
-                    Considerá una conversación individual.
+                    {t("teacherHome.streakText")}
                   </p>
                 </>
               )}
               {helpRequests > 0 && (
                 <p className={`font-bold ${streak > 0 ? "mt-2" : ""}`}>
-                  {helpRequests === 1
-                    ? "1 estudiante pidió hablar con vos"
-                    : `${helpRequests} estudiantes pidieron hablar con vos`}
+                  {t("teacherHome.help", { count: helpRequests })}
                 </p>
               )}
               <Link
                 to="/docente/alertas"
                 className="mt-1 inline-block font-bold text-azul underline-offset-2 hover:underline"
               >
-                Ver estudiantes
+                {t("teacherHome.seeStudents")}
               </Link>
             </div>
           </section>
@@ -254,17 +251,17 @@ function PanelBody({
       </div>
 
       {/* Active assignments */}
-      <Card title="Tareas activas" className="self-start">
+      <Card title={t("teacherHome.activeTasks")} className="self-start">
         {data.assignments.length === 0 ? (
           <div className="text-center">
             <p className="text-sm text-tinta/70">
-              No hay tareas activas en este grupo.
+              {t("teacherHome.noTasks")}
             </p>
             <Link
               to="/docente/lecciones"
               className="mt-3 inline-block rounded-full bg-azul px-5 py-2.5 font-display font-bold text-white"
             >
-              Asignar la lección de la semana
+              {t("teacherHome.assignWeek")}
             </Link>
           </div>
         ) : (
@@ -288,8 +285,7 @@ function PanelBody({
                       <p
                         className={`text-xs ${overdue ? "font-bold text-rosa-profundo" : "text-tinta/60"}`}
                       >
-                        Semana {a.week} · {overdue ? "venció" : "vence"}{" "}
-                        {shortDate(a.due_date)}
+                        {t(overdue ? "teacherHome.weekOverdue" : "teacherHome.weekDue", { week: a.week, date: shortDate(a.due_date) })}
                       </p>
                       <div className="mt-1.5 flex items-center gap-2">
                         <div className="h-2 flex-1 rounded-full bg-linea">

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { ArrowLeft, Copy, ExternalLink, Printer } from "lucide-react";
 import { ErrorCard } from "@/components/ui/Card";
 import { groupLabel, publicBase } from "@/lib/format";
@@ -7,7 +9,8 @@ import { useFamilyToken, useGroupOverview, useMyGroups } from "./api";
 import { usePageTitle } from "@/lib/usePageTitle";
 
 export default function FamilyQrPage() {
-  usePageTitle("QR para familias");
+  const { t } = useTranslation();
+  usePageTitle(t("groups.qr"));
   const { groupId } = useParams();
   const groups = useMyGroups();
   const group = groups.data?.find((g) => g.id === groupId);
@@ -43,30 +46,32 @@ export default function FamilyQrPage() {
     return (
       <div className="p-5 lg:p-10">
         <ErrorCard
-          message="No pudimos preparar el QR de este grupo."
+          message={t("familyQr.error")}
           onRetry={() => token.refetch()}
         />
       </div>
     );
   }
 
+  // The printed sheet goes home: it uses the group's language, not the portal's
+  const tg = i18n.getFixedT(group.language ?? "es");
+
   return (
     <div className="mx-auto max-w-xl px-5 pb-10 pt-4 lg:pt-8 print:max-w-none print:p-0">
       <div className="mb-4 flex items-center gap-2 print:hidden">
         <Link
           to="/docente/grupos"
-          aria-label="Volver"
+          aria-label={t("common.back")}
           className="rounded-full p-2 hover:bg-white"
         >
           <ArrowLeft size={22} />
         </Link>
-        <h1 className="text-2xl font-extrabold">QR para familias</h1>
+        <h1 className="text-2xl font-extrabold">{t("groups.qr")}</h1>
       </div>
 
       {isLocal && (
         <p className="mb-4 rounded-2xl bg-[#FFF3D1] px-4 py-3 text-sm print:hidden">
-          <b>Este QR apunta a esta compu</b> y no va a abrir en un celular. Para
-          probarlo con el teléfono, mirá la nota de W7.8.
+          <b>{t("familyQr.localTitle")}</b> {t("familyQr.localText")}
         </p>
       )}
 
@@ -74,7 +79,7 @@ export default function FamilyQrPage() {
       <section className="rounded-card border-2 border-rosa bg-white p-8 text-center print:rounded-none print:border-0">
         <img src="/logo-pio.png" alt="Pío" className="mx-auto h-12" />
         <p className="mt-4 text-xs font-extrabold uppercase tracking-[0.2em] text-rosa-profundo">
-          Espacio para la familia
+          {tg("familyQr.space")}
         </p>
         <h2 className="mt-1 text-3xl font-extrabold">{groupLabel(group)}</h2>
         {overview.data && (
@@ -84,7 +89,7 @@ export default function FamilyQrPage() {
         {qr ? (
           <img
             src={qr}
-            alt={`Código QR: ${url}`}
+            alt={t("familyQr.qrAlt", { url })}
             className="mx-auto mt-6 w-64 print:w-80"
           />
         ) : (
@@ -92,16 +97,12 @@ export default function FamilyQrPage() {
         )}
 
         <ol className="mx-auto mt-6 max-w-sm space-y-1 text-left text-sm">
-          <li>1. Abran la cámara del celular y apunten al código.</li>
-          <li>
-            2. Cada semana verán el <b>reto en casa</b> y una nota para
-            acompañar a su hijo o hija.
-          </li>
-          <li>3. Toma de 5 a 10 minutos, sin presión.</li>
+          <li>1. {tg("familyQr.step1")}</li>
+          <li>2. {tg("familyQr.step2")}</li>
+          <li>3. {tg("familyQr.step3")}</li>
         </ol>
         <p className="mt-6 text-xs text-tinta/60">
-          No necesitan cuenta. Esta página no pide ni guarda datos de su
-          familia.
+          {tg("familyQr.privacy")}
         </p>
         <img src="/pio-mascota.png" alt="" className="mx-auto mt-4 h-16 w-16" />
       </section>
@@ -111,7 +112,7 @@ export default function FamilyQrPage() {
           onClick={() => window.print()}
           className="flex items-center justify-center gap-2 rounded-full bg-azul py-3 font-bold text-white"
         >
-          <Printer size={18} /> Imprimir
+          <Printer size={18} /> {t("common.print")}
         </button>
         <button
           onClick={async () => {
@@ -121,7 +122,7 @@ export default function FamilyQrPage() {
           }}
           className="flex items-center justify-center gap-2 rounded-full border-2 border-linea bg-white py-3 font-bold"
         >
-          <Copy size={18} /> {copied ? "¡Copiado!" : "Copiar enlace"}
+          <Copy size={18} /> {copied ? t("familyQr.copied") : t("familyQr.copy")}
         </button>
         {url && (
           <a
@@ -130,7 +131,7 @@ export default function FamilyQrPage() {
             rel="noreferrer"
             className="flex items-center justify-center gap-2 rounded-full border-2 border-linea bg-white py-3 font-bold"
           >
-            <ExternalLink size={18} /> Ver página
+            <ExternalLink size={18} /> {t("familyQr.open")}
           </a>
         )}
       </div>

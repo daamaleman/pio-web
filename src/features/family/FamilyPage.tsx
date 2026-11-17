@@ -1,9 +1,10 @@
 import { useParams } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
+import i18n from '@/i18n'
 import { supabase } from '@/lib/supabase'
 import { EmotionDrop } from '@/components/EmotionDrop'
 import { EMOTIONS, type Emotion } from '@/lib/emotions'
-import { groupLabel, pickText, shortDate } from '@/lib/format'
+import { pickText } from '@/lib/format'
 import type { Json } from '@/lib/database.types'
 import { usePageTitle } from '@/lib/usePageTitle'
 
@@ -20,51 +21,11 @@ type FamilyWeek = {
   }
 }
 
-const T = {
-  es: {
-    space: 'Espacio para la familia',
-    thisWeek: 'Esta semana',
-    week: 'Semana',
-    until: 'hasta el',
-    challenge: 'Reto en casa',
-    note: 'Para la familia',
-    howTitle: 'Cómo acompañar',
-    how: [
-      'Escuchen sin juzgar: todas las emociones están bien.',
-      'Eviten frases como «no llores» o «eso no es nada».',
-      'Son 5 a 10 minutos, sin presión. Si no se puede hoy, otro día.',
-      'Si notan malestar que dura varios días, avísenle a la docente.',
-    ],
-    sheet: 'La ficha de la semana se llena en la app, en «Espacio para la familia».',
-    none: 'Esta semana todavía no hay reto. Vuelvan después de la próxima clase.',
-    notFound: 'Este enlace ya no funciona. Pídanle el código nuevo a la docente.',
-    error: 'No pudimos cargar la página. Revisen la conexión e intenten de nuevo.',
-    privacy: 'Esta página no pide ni guarda datos de su familia.',
-  },
-  en: {
-    space: 'Family space',
-    thisWeek: 'This week',
-    week: 'Week',
-    until: 'until',
-    challenge: 'Challenge at home',
-    note: 'For the family',
-    howTitle: 'How to support',
-    how: [
-      'Listen without judging: every feeling is okay.',
-      'Avoid phrases like "don’t cry" or "that’s nothing".',
-      'It takes 5 to 10 minutes, no pressure. If not today, another day.',
-      'If you notice distress that lasts several days, let the teacher know.',
-    ],
-    sheet: 'The weekly sheet is filled in the app, in "Family space".',
-    none: 'There is no challenge yet this week. Come back after the next class.',
-    notFound: 'This link no longer works. Ask the teacher for the new code.',
-    error: 'We could not load the page. Check the connection and try again.',
-    privacy: 'This page does not ask for or store any family data.',
-  },
-}
-
 export default function FamilyPage() {
-  usePageTitle('Espacio para la familia')
+  // The page follows the group's language (miq falls back to es), not the visitor's portal setting
+  const groupLang = browserLang()
+  const t = i18n.getFixedT(groupLang)
+  usePageTitle(t('familyQr.space'))
   const { token } = useParams()
   const week = useQuery({
     queryKey: ['family-week', token],
@@ -76,8 +37,13 @@ export default function FamilyPage() {
     },
   })
 
-  const lang = week.data?.group.language === 'en' ? 'en' : 'es' // miq: falls back to es until translated
-  const t = T[lang]
+  const lang = week.data?.group.language ?? 'es'
+  const tg = i18n.getFixedT(lang)
+  const dateLocale = lang === 'en' ? 'en-US' : 'es-NI'
+  const date = (iso: string) =>
+    new Intl.DateTimeFormat(dateLocale, { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' })
+      .format(new Date(`${iso}T12:00:00Z`))
+      .replace(/\./g, '')
 
   if (week.isLoading) {
     return <div className="flex min-h-screen items-center justify-center"><img src="/pio-mascota.png" alt="" className="h-20 w-20 animate-pulse" /></div>
@@ -88,19 +54,25 @@ export default function FamilyPage() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-3 p-8 text-center">
         <img src="/pio-mascota.png" alt="" className="h-24 w-24" />
-        <p className="max-w-xs font-bold">{notFound ? T.es.notFound : T.es.error}</p>
+        <p className="max-w-xs font-bold">{notFound ? t('family.notFound') : t('family.error')}</p>
       </div>
     )
   }
 
   const { group, this_week: w } = week.data
+  const label =
+    group.level === 'primary'
+      ? tg('group.primary', { grade: group.grade, section: group.section })
+      : group.grade === 1
+        ? tg('group.secondaryFirst', { section: group.section })
+        : tg('group.secondary', { grade: group.grade, section: group.section })
 
   return (
     <div className="mx-auto min-h-screen max-w-lg pb-10">
       <header className="rounded-b-[2rem] bg-rosa px-6 pb-8 pt-6 text-white">
         <img src="/logo-pio.png" alt="Pío" className="h-9 rounded-lg bg-white px-2 py-1" />
-        <p className="mt-5 text-xs font-extrabold uppercase tracking-[0.2em] text-white/85">{t.space}</p>
-        <h1 className="text-3xl font-extrabold">{groupLabel(group)}</h1>
+        <p className="mt-5 text-xs font-extrabold uppercase tracking-[0.2em] text-white/85">{tg('familyQr.space')}</p>
+        <h1 className="text-3xl font-extrabold">{label}</h1>
         <p className="text-white/85">{group.school_name}</p>
       </header>
 
@@ -108,7 +80,7 @@ export default function FamilyPage() {
         {!w ? (
           <section className="rounded-card border border-linea bg-white p-6 text-center">
             <img src="/pio-mascota.png" alt="" className="mx-auto h-20 w-20" />
-            <p className="mt-2 font-bold">{t.none}</p>
+            <p className="mt-2 font-bold">{tg('family.none')}</p>
           </section>
         ) : (
           <>
@@ -120,37 +92,42 @@ export default function FamilyPage() {
               )}
               <div>
                 <p className="text-xs font-extrabold uppercase tracking-wider text-tinta/60">
-                  {t.thisWeek} · {t.week} {w.week}
+                  {tg('climate.thisWeek')} · {tg('library.week', { week: w.week })}
                 </p>
                 <h2 className="text-xl font-extrabold leading-tight">{pickText(w.title, lang)}</h2>
-                <p className="text-sm text-tinta/60">{t.until} {shortDate(w.due_date)}</p>
+                <p className="text-sm text-tinta/60">{tg('family.until', { date: date(w.due_date) })}</p>
               </div>
             </section>
 
             <section className="rounded-card bg-[#FFF3D1] p-5">
-              <h3 className="text-lg font-bold">🏠 {t.challenge}</h3>
+              <h3 className="text-lg font-bold">🏠 {tg('guide.homeChallenge')}</h3>
               <p className="mt-1">{pickText(w.home_challenge, lang)}</p>
             </section>
 
             <section className="rounded-card border border-linea bg-white p-5">
-              <h3 className="text-lg font-bold">💬 {t.note}</h3>
+              <h3 className="text-lg font-bold">💬 {tg('sheet.forFamily').replace(/:$/, '')}</h3>
               <p className="mt-1">{pickText(w.family_note, lang)}</p>
             </section>
           </>
         )}
 
         <section className="rounded-card border border-linea bg-white p-5">
-          <h3 className="text-lg font-bold">{t.howTitle}</h3>
+          <h3 className="text-lg font-bold">{tg('family.howTitle')}</h3>
           <ul className="mt-2 space-y-2 text-sm">
-            {t.how.map((tip) => (
+            {(['how1', 'how2', 'how3', 'how4'] as const).map((k) => tg(`family.${k}`)).map((tip) => (
               <li key={tip} className="flex gap-2"><span className="text-rosa">●</span>{tip}</li>
             ))}
           </ul>
         </section>
 
-        <p className="text-center text-sm text-tinta/70">{t.sheet}</p>
-        <p className="text-center text-xs text-tinta/50">{t.privacy}</p>
+        <p className="text-center text-sm text-tinta/70">{tg('family.sheet')}</p>
+        <p className="text-center text-xs text-tinta/50">{tg('family.privacy')}</p>
       </main>
     </div>
   )
+}
+
+// Before the data arrives, use the browser language (en or es)
+function browserLang(): string {
+  return typeof navigator !== 'undefined' && navigator.language?.toLowerCase().startsWith('en') ? 'en' : 'es'
 }

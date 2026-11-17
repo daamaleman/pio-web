@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { useParams } from 'react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import { tLabels } from '@/i18n'
 import { FunctionsHttpError } from '@supabase/supabase-js'
 import { Mail, UserPlus } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
@@ -12,24 +14,9 @@ import { relativeDay } from '@/lib/format'
 import { useMySchools } from './api'
 import { useAuth } from '@/app/auth-context'
 
-const INVITE_ERROR: Record<string, string> = {
-  INVALID_EMAIL: 'Revisá el correo.',
-  INVALID_NAME: 'El nombre debe tener de 3 a 80 caracteres.',
-  INVALID_ROLE: 'Elegí un rol.',
-  ROLE_NOT_ALLOWED: 'Dirección solo puede invitar docentes y orientación.',
-  FORBIDDEN: 'No tenés permiso para invitar en esta escuela.',
-  SCHOOL_NOT_FOUND: 'La escuela no existe.',
-  ROLE_MISMATCH: 'Esa persona ya tiene otro rol en Pío. Pedile ayuda al equipo de administración.',
-  ALREADY_IN_SCHOOL: 'Esa persona ya es parte de la escuela.',
-  INVITE_FAILED: 'No pudimos enviar el correo. Intentá más tarde.',
-  NETWORK: 'No pudimos conectar con el servidor.',
-}
+const INVITE_ERROR = tLabels('staff.errors', ['INVALID_EMAIL', 'INVALID_NAME', 'INVALID_ROLE', 'ROLE_NOT_ALLOWED', 'FORBIDDEN', 'SCHOOL_NOT_FOUND', 'ROLE_MISMATCH', 'ALREADY_IN_SCHOOL', 'INVITE_FAILED', 'NETWORK'] as const) as Record<string, string>
 
-const STATUS_TEXT: Record<string, string> = {
-  invited: 'Le enviamos un correo con un enlace para crear su contraseña (vale 24 horas).',
-  added_to_school: 'Ya tenía cuenta en Pío: la agregamos a la escuela.',
-  profile_completed: 'Ya tenía cuenta: completamos su perfil y la agregamos a la escuela.',
-}
+const STATUS_TEXT = tLabels('staff.status', ['invited', 'added_to_school', 'profile_completed'] as const) as Record<string, string>
 
 function useSchoolStaff(schoolId: string | undefined) {
   return useQuery({
@@ -48,6 +35,7 @@ function useSchoolStaff(schoolId: string | undefined) {
 }
 
 export default function StaffPage() {
+  const { t } = useTranslation()
   const { schoolId: paramId } = useParams()
   const { role: myRole } = useAuth()
   const schools = useMySchools()
@@ -91,12 +79,12 @@ export default function StaffPage() {
 
   return (
     <div className="pb-10">
-      <PageHeader title="Personal" subtitle="Quién usa Pío en tu escuela." />
+      <PageHeader title={t('nav.staff')} subtitle={t('staff.subtitle')} />
       <div className="grid gap-4 px-5 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:px-10">
         {/* List */}
         <section className="rounded-card border border-linea bg-white p-5">
-          <h2 className="mb-3 text-lg font-bold">Equipo ({staff.data?.length ?? 0})</h2>
-          {staff.error && <ErrorCard message="No pudimos cargar el personal." onRetry={() => staff.refetch()} />}
+          <h2 className="mb-3 text-lg font-bold">{t('staff.team')} ({staff.data?.length ?? 0})</h2>
+          {staff.error && <ErrorCard message={t('staff.loadError')} onRetry={() => staff.refetch()} />}
           <ul className="flex flex-col divide-y divide-linea">
             {sorted.map((s) => (
               <li key={s.profile_id} className="flex items-center gap-3 py-3">
@@ -105,13 +93,13 @@ export default function StaffPage() {
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-bold">{s.profiles?.full_name ?? '—'}</p>
-                  <p className="text-xs text-tinta/60">En la escuela desde {relativeDay(s.created_at)}</p>
+                  <p className="text-xs text-tinta/60">{t('staff.since', { when: relativeDay(s.created_at) })}</p>
                 </div>
                 {s.profiles && isStaff(s.profiles.role) && (
                   <span className="rounded-full bg-azul-suave px-3 py-1 text-xs font-bold text-azul">{ROLE_LABEL[s.profiles.role]}</span>
                 )}
                 {s.profiles && !s.profiles.active && (
-                  <span className="rounded-full bg-arena px-3 py-1 text-xs font-bold text-tinta/50">Inactiva</span>
+                  <span className="rounded-full bg-arena px-3 py-1 text-xs font-bold text-tinta/50">{t('staff.inactive')}</span>
                 )}
               </li>
             ))}
@@ -120,18 +108,18 @@ export default function StaffPage() {
 
         {/* Invite */}
         <form onSubmit={onSubmit} className="self-start rounded-card border border-linea bg-white p-5">
-          <h2 className="flex items-center gap-2 text-lg font-bold"><UserPlus size={20} /> Invitar</h2>
-          <p className="mt-1 text-sm text-tinta/60">Le llega un correo para crear su contraseña.</p>
+          <h2 className="flex items-center gap-2 text-lg font-bold"><UserPlus size={20} /> {t('staff.invite')}</h2>
+          <p className="mt-1 text-sm text-tinta/60">{t('staff.inviteHint')}</p>
 
-          <label htmlFor="inv-name" className="mt-4 block text-sm font-bold">Nombre completo</label>
+          <label htmlFor="inv-name" className="mt-4 block text-sm font-bold">{t('staff.fullName')}</label>
           <input id="inv-name" required minLength={3} maxLength={80} value={fullName} onChange={(e) => setFullName(e.target.value)}
             className="mt-1 w-full rounded-2xl border-2 border-linea px-4 py-2.5 outline-none focus:border-azul" />
 
-          <label htmlFor="inv-email" className="mt-3 block text-sm font-bold">Correo</label>
+          <label htmlFor="inv-email" className="mt-3 block text-sm font-bold">{t('login.email')}</label>
           <input id="inv-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
             className="mt-1 w-full rounded-2xl border-2 border-linea px-4 py-2.5 outline-none focus:border-azul" />
 
-          <p className="mt-3 text-sm font-bold">Rol</p>
+          <p className="mt-3 text-sm font-bold">{t('staff.role')}</p>
           <div className={`mt-1 grid gap-2 ${invitable.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
             {invitable.map((r) => (
               <button key={r} type="button" onClick={() => setRole(r)} aria-pressed={role === r}
@@ -143,18 +131,18 @@ export default function StaffPage() {
 
           {invite.error && (
             <p role="alert" className="mt-3 rounded-2xl bg-rosa-suave px-4 py-3 text-sm font-bold text-rosa-profundo">
-              {INVITE_ERROR[invite.error.message] ?? 'No pudimos invitar. Intentá de nuevo.'}
+              {INVITE_ERROR[invite.error.message] ?? t('staff.inviteError')}
             </p>
           )}
           {invite.data && (
             <p role="status" className="mt-3 rounded-2xl bg-[#E6F4DC] px-4 py-3 text-sm font-bold text-[#2E6B12]">
-              ✓ {invite.data.full_name}: {STATUS_TEXT[invite.data.status] ?? 'Listo.'}
+              ✓ {invite.data.full_name}: {STATUS_TEXT[invite.data.status] ?? t('common.done')}
             </p>
           )}
 
           <button type="submit" disabled={invite.isPending || !schoolId}
             className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-azul py-3 font-display text-lg font-bold text-white disabled:opacity-60">
-            <Mail size={18} /> {invite.isPending ? 'Enviando…' : 'Enviar invitación'}
+            <Mail size={18} /> {invite.isPending ? t('progress.sending') : t('staff.send')}
           </button>
         </form>
       </div>

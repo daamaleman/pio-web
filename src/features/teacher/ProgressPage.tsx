@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Link, useParams } from "react-router";
+import { useTranslation } from "react-i18next";
+import { t as tr } from "@/i18n";
 import { ArrowLeft, BellRing, ChevronDown } from "lucide-react";
 import { ErrorCard } from "@/components/ui/Card";
 import { EmotionDrop } from "@/components/EmotionDrop";
@@ -27,13 +29,13 @@ const RESULT: Record<
   Exclude<IndicatorResult, null> | "none",
   { label: string; cls: string }
 > = {
-  achieved: { label: "Logrado", cls: "bg-[#E6F4DC] text-[#2E6B12]" },
-  in_progress: { label: "En proceso", cls: "bg-[#FFF3D1] text-[#7A5600]" },
+  achieved: { get label() { return tr("progress.result.achieved"); }, cls: "bg-[#E6F4DC] text-[#2E6B12]" },
+  in_progress: { get label() { return tr("progress.result.in_progress"); }, cls: "bg-[#FFF3D1] text-[#7A5600]" },
   needs_support: {
-    label: "Necesita apoyo",
+    get label() { return tr("progress.result.needs_support"); },
     cls: "bg-rosa-suave text-rosa-profundo",
   },
-  none: { label: "Sin jugar", cls: "bg-arena text-tinta/60" },
+  none: { get label() { return tr("progress.result.none"); }, cls: "bg-arena text-tinta/60" },
 };
 
 type Student = AssignmentProgress["students"][number];
@@ -47,23 +49,17 @@ type RemindResult = {
 
 function remindMessage(r: RemindResult): string {
   const parts: string[] = [];
-  if (r.queued > 0)
-    parts.push(
-      `Listo: le recordamos a ${r.queued} ${r.queued === 1 ? "estudiante" : "estudiantes"}. Les llega entre 7:00 a. m. y 7:00 p. m.`,
-    );
+  if (r.queued > 0) parts.push(tr("progress.remind.queued", { count: r.queued }));
   if (r.already_reminded > 0)
-    parts.push(
-      `${r.already_reminded} ya ${r.already_reminded === 1 ? "recibió" : "recibieron"} un recordatorio en las últimas 12 horas.`,
-    );
+    parts.push(tr("progress.remind.already", { count: r.already_reminded }));
   if (r.without_app > 0)
-    parts.push(
-      `${r.without_app} todavía no ${r.without_app === 1 ? "ha entrado" : "han entrado"} a la app, así que no les puede llegar.`,
-    );
-  return parts.join(" ") || "No hay pendientes a quienes recordar.";
+    parts.push(tr("progress.remind.withoutApp", { count: r.without_app }));
+  return parts.join(" ") || tr("progress.remind.none");
 }
 
 export default function ProgressPage() {
-  usePageTitle("Progreso");
+  const { t } = useTranslation();
+  usePageTitle(t("progress.title"));
   const { id } = useParams();
   const progress = useAssignmentProgress(id);
   const [tab, setTab] = useState<"done" | "pending">("done");
@@ -80,7 +76,7 @@ export default function ProgressPage() {
   const back = (
     <Link
       to="/docente"
-      aria-label="Volver"
+      aria-label={t("common.back")}
       className="rounded-full p-2 hover:bg-white"
     >
       <ArrowLeft size={22} />
@@ -96,7 +92,7 @@ export default function ProgressPage() {
       <div className="p-5 lg:p-10">
         {back}
         <ErrorCard
-          message="No pudimos cargar el avance de esta tarea."
+          message={t("progress.loadError")}
           onRetry={() => progress.refetch()}
         />
       </div>
@@ -120,8 +116,7 @@ export default function ProgressPage() {
           <p
             className={`text-sm ${overdue ? "font-bold text-rosa-profundo" : "text-tinta/60"}`}
           >
-            Semana {p.week} · {overdue ? "venció" : "vence"} el{" "}
-            {shortDate(p.due_date)}
+            {t(overdue ? "teacherHome.weekOverdue" : "teacherHome.weekDue", { week: p.week, date: shortDate(p.due_date) })}
           </p>
         </div>
       </div>
@@ -130,10 +125,10 @@ export default function ProgressPage() {
       <section className="flex items-center gap-6 rounded-card border border-linea bg-white p-5">
         <Ring pct={p.summary.completed_pct} />
         <dl className="grid flex-1 gap-2 text-sm">
-          <Row label="Terminaron" value={p.summary.completed} />
-          <Row label="En proceso" value={p.summary.in_progress} />
-          <Row label="Sin empezar" value={p.summary.not_started} />
-          <Row label="Sellos ganados" value={p.summary.badges_earned} />
+          <Row label={t("progress.done")} value={p.summary.completed} />
+          <Row label={t("progress.result.in_progress")} value={p.summary.in_progress} />
+          <Row label={t("progress.notStarted")} value={p.summary.not_started} />
+          <Row label={t("progress.badges")} value={p.summary.badges_earned} />
         </dl>
       </section>
 
@@ -143,18 +138,18 @@ export default function ProgressPage() {
         className="mt-5 grid grid-cols-2 rounded-full bg-white p-1 text-sm font-bold"
       >
         <TabButton active={tab === "done"} onClick={() => setTab("done")}>
-          Terminaron ({done.length})
+          {t("progress.done")} ({done.length})
         </TabButton>
         <TabButton active={tab === "pending"} onClick={() => setTab("pending")}>
-          Pendientes ({pending.length})
+          {t("progress.pending")} ({pending.length})
         </TabButton>
       </div>
 
       {list.length === 0 ? (
         <p className="mt-6 text-center text-tinta/60">
           {tab === "done"
-            ? "Todavía nadie terminó esta lección."
-            : "¡Todos terminaron! 🎉"}
+            ? t("progress.noneDone")
+            : t("progress.allDone")}
         </p>
       ) : (
         <ul className="mt-3 flex flex-col gap-2">
@@ -165,7 +160,7 @@ export default function ProgressPage() {
       )}
 
       <p className="mt-6 text-center text-xs text-tinta/50">
-        La emoción es el último check-in de la semana. Solo vos la ves.
+        {t("progress.emotionNote")}
       </p>
       {pending.length > 0 && (
         <div className="sticky bottom-24 mt-6 lg:bottom-6">
@@ -182,7 +177,7 @@ export default function ProgressPage() {
               role="alert"
               className="mb-2 rounded-2xl bg-rosa-suave px-4 py-3 text-sm font-bold text-rosa-profundo"
             >
-              No pudimos enviar el recordatorio. Intentá de nuevo.
+              {t("progress.remindError")}
             </p>
           )}
           <button
@@ -192,10 +187,10 @@ export default function ProgressPage() {
           >
             <BellRing size={20} />
             {remind.isPending
-              ? "Enviando…"
+              ? t("progress.sending")
               : remind.isSuccess
-                ? "Recordatorio enviado"
-                : `Recordar a ${pending.length === 1 ? "la persona pendiente" : `los ${pending.length} pendientes`}`}
+                ? t("progress.sent")
+                : t("progress.remindButton", { count: pending.length })}
           </button>
         </div>
       )}
@@ -204,13 +199,14 @@ export default function ProgressPage() {
 }
 
 function StudentRow({ s, color }: { s: Student; color: string }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const subtitle =
     s.status === "completed" && s.completed_at
-      ? `Terminó ${relativeDay(s.completed_at)}${s.on_time === false ? " · después de la fecha" : ""}`
+      ? `${t("progress.finishedWhen", { when: relativeDay(s.completed_at) })}${s.on_time === false ? ` · ${t("progress.late")}` : ""}`
       : s.status === "in_progress"
-        ? `En proceso · paso ${s.current_position ?? 1}`
-        : "Sin empezar";
+        ? t("progress.inProgressStep", { step: s.current_position ?? 1 })
+        : t("progress.notStarted");
 
   return (
     <li className="rounded-2xl border border-linea bg-white">
@@ -234,7 +230,7 @@ function StudentRow({ s, color }: { s: Student; color: string }) {
         ) : (
           <span
             className="h-6 w-6 rounded-full bg-linea"
-            title="Sin check-in esta semana"
+            title={t("progress.noCheckin")}
           />
         )}
         <ChevronDown
@@ -245,11 +241,11 @@ function StudentRow({ s, color }: { s: Student; color: string }) {
       {open && (
         <div className="border-t border-linea px-4 py-3">
           <p className="mb-2 text-xs font-extrabold uppercase tracking-wider text-tinta/60">
-            Indicadores
+            {t("progress.indicators")}
           </p>
           {s.indicators.length === 0 ? (
             <p className="text-sm text-tinta/60">
-              Esta lección no tiene mini-juegos con indicador.
+              {t("progress.noIndicators")}
             </p>
           ) : (
             <ul className="flex flex-col gap-2">
@@ -291,7 +287,7 @@ function Ring({ pct }: { pct: number }) {
       height="110"
       viewBox="0 0 110 110"
       role="img"
-      aria-label={`${pct}% terminaron`}
+      aria-label={tr("progress.ringAria", { pct })}
       className="shrink-0"
     >
       <circle

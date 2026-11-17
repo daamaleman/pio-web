@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import type { ReactNode } from 'react'
 
 export function Card({ title, aside, children, className = '' }: {
@@ -20,12 +21,13 @@ export function Card({ title, aside, children, className = '' }: {
 }
 
 export function ErrorCard({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  const { t } = useTranslation()
   return (
     <div role="alert" className="rounded-card bg-rosa-suave p-5 text-rosa-profundo">
       <p className="font-bold">{message}</p>
       {onRetry && (
         <button onClick={onRetry} className="mt-3 rounded-full bg-white px-4 py-2 text-sm font-bold">
-          Reintentar
+          {t('common.retry')}
         </button>
       )}
     </div>

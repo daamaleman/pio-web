@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
+import { locale } from "@/i18n";
 import {
   ArrowLeft,
   CalendarDays,
@@ -17,17 +19,6 @@ import { useGroupAssignments, useLessons, useMyGroups } from "./api";
 import { useSelectedGroup } from "./useSelectedGroup";
 import { usePageTitle } from "@/lib/usePageTitle";
 
-const WEEKDAY = [
-  "",
-  "lunes",
-  "martes",
-  "miércoles",
-  "jueves",
-  "viernes",
-  "sábado",
-  "domingo",
-];
-
 function shiftMonth(first: string, delta: number) {
   const d = new Date(`${first}T12:00:00Z`);
   d.setUTCMonth(d.getUTCMonth() + delta);
@@ -35,7 +26,8 @@ function shiftMonth(first: string, delta: number) {
 }
 
 export default function PlanPage() {
-  usePageTitle("Plan del mes");
+  const { t } = useTranslation();
+  usePageTitle(t("library.monthPlan"));
   const groups = useMyGroups();
   const [group, selectGroup] = useSelectedGroup(groups.data);
   const lessons = useLessons(group);
@@ -87,11 +79,11 @@ export default function PlanPage() {
   if (!group)
     return (
       <div className="p-5 lg:p-10">
-        <ErrorCard message="No tenés grupos todavía." />
+        <ErrorCard message={t("plan.noGroups")} />
       </div>
     );
 
-  const monthName = new Intl.DateTimeFormat("es-NI", {
+  const monthName = new Intl.DateTimeFormat(locale(), {
     month: "long",
     year: "numeric",
     timeZone: "UTC",
@@ -102,17 +94,17 @@ export default function PlanPage() {
       <div className="mb-4 flex items-center gap-2">
         <Link
           to="/docente/lecciones"
-          aria-label="Volver"
+          aria-label={t("common.back")}
           className="rounded-full p-2 hover:bg-white"
         >
           <ArrowLeft size={22} />
         </Link>
         <div className="flex-1">
-          <h1 className="text-2xl font-extrabold">Plan del mes</h1>
+          <h1 className="text-2xl font-extrabold">{t("library.monthPlan")}</h1>
           <p className="text-sm text-tinta/60">
             {groupLabel(group)}
             {group.class_weekday
-              ? ` · clase los ${WEEKDAY[group.class_weekday]}`
+              ? ` · ${t("plan.classOn", { day: t(`weekday.${group.class_weekday}`) })}`
               : ""}
           </p>
         </div>
@@ -129,7 +121,7 @@ export default function PlanPage() {
         <span className="inline-flex items-center gap-1 rounded-full bg-white p-1 text-sm font-bold">
           <button
             onClick={() => setMonth(shiftMonth(month, -1))}
-            aria-label="Mes anterior"
+            aria-label={t("plan.prevMonth")}
             className="rounded-full p-1.5 hover:bg-arena"
           >
             <ChevronLeft size={18} />
@@ -137,7 +129,7 @@ export default function PlanPage() {
           <span className="px-2 capitalize">{monthName}</span>
           <button
             onClick={() => setMonth(shiftMonth(month, 1))}
-            aria-label="Mes siguiente"
+            aria-label={t("plan.nextMonth")}
             className="rounded-full p-1.5 hover:bg-arena"
           >
             <ChevronRight size={18} />
@@ -146,7 +138,7 @@ export default function PlanPage() {
       </div>
 
       {!group.class_weekday && (
-        <ErrorCard message="Este grupo no tiene día de clase. Configuralo en Grupos → Editar para ver el plan." />
+        <ErrorCard message={t("plan.noWeekday")} />
       )}
       {(lessons.isLoading || assignments.isLoading) && (
         <div className="h-64 animate-pulse rounded-card bg-linea" />
@@ -163,7 +155,7 @@ export default function PlanPage() {
                 <span className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-xl bg-azul-suave text-azul">
                   <CalendarDays size={16} />
                   <span className="text-[11px] font-extrabold">
-                    Clase {i + 1}
+                    {t("plan.classN", { n: i + 1 })}
                   </span>
                 </span>
                 <div className="min-w-0 flex-1">
@@ -178,19 +170,19 @@ export default function PlanPage() {
                           size={16}
                         />
                       )}
-                      Semana {r.lesson.week} · {pickText(r.lesson.title)}
+                      {t("library.week", { week: r.lesson.week })} · {pickText(r.lesson.title)}
                     </p>
                   ) : (
                     <p className="font-bold text-tinta/50">
                       {r.kind === "past"
-                        ? "Sin lección asignada"
-                        : "Semana libre: repaso o actividad de aula"}
+                        ? t("plan.noLesson")
+                        : t("plan.freeWeek")}
                     </p>
                   )}
                   {"lesson" in r && r.lesson?.emotion && (
                     <p className="text-xs text-tinta/60">
                       {EMOTIONS[r.lesson.emotion as Emotion].label}
-                      {r.lesson.is_month_closure ? " · cierre del mes" : ""}
+                      {r.lesson.is_month_closure ? ` · ${t("library.monthClosure")}` : ""}
                     </p>
                   )}
                 </div>
@@ -199,7 +191,7 @@ export default function PlanPage() {
                     to={`/docente/asignaciones/${r.assignment.id}`}
                     className="shrink-0 rounded-full border-2 border-linea px-3 py-1.5 text-sm font-bold"
                   >
-                    Ver avance
+                    {t("library.seeProgress")}
                   </Link>
                 )}
                 {r.kind === "now" && r.lesson && (
@@ -207,30 +199,30 @@ export default function PlanPage() {
                     to={`/docente/lecciones/${r.lesson.id}/asignar`}
                     className="shrink-0 rounded-full bg-azul px-4 py-2 text-sm font-bold text-white"
                   >
-                    Asignar ahora
+                    {t("plan.assignNow")}
                   </Link>
                 )}
               </div>
               {r.kind === "assigned" && (
                 <p className="mt-2 text-xs font-bold text-azul">
-                  Asignada · vence {shortDate(r.assignment.due_date)}
+                  {t("library.assignedDue", { date: shortDate(r.assignment.due_date) })}
                 </p>
               )}
               {r.kind === "now" && today < r.date && (
                 <p className="mt-2 text-xs font-bold text-rosa-profundo">
-                  Asignala después de la clase de hoy.
+                  {t("plan.afterToday")}
                 </p>
               )}
               {r.kind === "future" && (
                 <p className="mt-2 text-xs text-tinta/60">
-                  Propuesta · se asigna después de la clase.
+                  {t("plan.proposed")}
                 </p>
               )}
               {i === 0 && (
-                <Hint text="Recordá a tus estudiantes hacer la autoevaluación de inicio de mes en la app." />
+                <Hint text={t("plan.hintStart")} />
               )}
               {i === plan.rows.length - 1 && plan.rows.length > 1 && (
-                <Hint text="Última clase: autoevaluación de cierre de mes en la app." />
+                <Hint text={t("plan.hintEnd")} />
               )}
             </li>
           ))}
@@ -239,10 +231,9 @@ export default function PlanPage() {
 
       {plan && plan.other.length > 0 && (
         <section className="mt-4 rounded-card border border-dashed border-linea bg-white p-4">
-          <p className="text-sm font-bold">Otras asignaciones de este mes</p>
+          <p className="text-sm font-bold">{t("plan.otherTitle")}</p>
           <p className="text-xs text-tinta/60">
-            Se asignaron en otra fecha de clase (por ejemplo, antes de cambiar
-            el día).
+            {t("plan.otherText")}
           </p>
           <ul className="mt-2 flex flex-col gap-1 text-sm">
             {plan.other.map((a) => (

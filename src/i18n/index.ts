@@ -40,10 +40,25 @@ i18n.on('languageChanged', (lang) => {
 })
 
 export const t = i18n.t.bind(i18n)
+// Untyped lookup for keys built at runtime
+const tKey = t as unknown as (key: string) => string
 
 // Dates: English for en; Nicaraguan Spanish for es and miq (Intl has no Miskitu)
 export function locale(): string {
   return i18n.language === 'en' ? 'en-US' : 'es-NI'
+}
+
+// Language for lesson content stored as { es, en, miq? }: falls back to es
+export function contentLang(): string {
+  return i18n.language
+}
+
+// Record whose values are read from i18n every time (so they follow language changes).
+// Works with Object.entries / Object.keys because the getters are enumerable.
+export function tLabels<K extends string>(prefix: string, keys: readonly K[]): Record<K, string> {
+  const out = {} as Record<K, string>
+  for (const k of keys) Object.defineProperty(out, k, { get: () => tKey(`${prefix}.${k}`), enumerable: true })
+  return out
 }
 
 export default i18n

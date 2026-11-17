@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 // In primary, the PIN is 4 drawings from a 3x3 grid. Each digit (1–9) is a position:
 // 1 2 3 / 4 5 6 / 7 8 9. The card shows which square to tap, in order.
 function PinGrid({ digit, order }: { digit: number; order: number }) {
@@ -20,6 +21,7 @@ export function PinCard({ name, groupText, classCode, pin, level }: {
   pin: string
   level: string
 }) {
+  const { t } = useTranslation()
   return (
     <div className="break-inside-avoid rounded-2xl border-2 border-dashed border-rosa bg-white p-4">
       <div className="flex items-center justify-between">
@@ -29,11 +31,11 @@ export function PinCard({ name, groupText, classCode, pin, level }: {
       <p className="mt-2 font-display text-xl font-extrabold leading-tight">{name}</p>
       <div className="mt-2 flex items-end justify-between gap-3">
         <div>
-          <p className="text-[10px] font-extrabold uppercase tracking-wider text-tinta/50">Código de clase</p>
+          <p className="text-[10px] font-extrabold uppercase tracking-wider text-tinta/50">{t('students.classCode')}</p>
           <p className="font-display text-lg font-extrabold tracking-widest text-azul">{classCode}</p>
         </div>
         <div className="text-right">
-          <p className="text-[10px] font-extrabold uppercase tracking-wider text-tinta/50">Tu PIN</p>
+          <p className="text-[10px] font-extrabold uppercase tracking-wider text-tinta/50">{t('students.yourPin')}</p>
           {level === 'primary' ? (
             <div className="mt-1 flex gap-1.5">
               {pin.split('').map((d, i) => <PinGrid key={i} digit={Number(d)} order={i + 1} />)}
