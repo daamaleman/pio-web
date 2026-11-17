@@ -22,6 +22,7 @@ import GroupFormPage from "@/features/teacher/GroupFormPage";
 import FamiliesPage from "@/features/teacher/FamiliesPage";
 import WellbeingPage from "@/features/wellbeing/WellbeingPage";
 import PlanPage from "@/features/teacher/PlanPage";
+import ReportPage from "@/features/reports/ReportPage";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -72,6 +73,10 @@ export const router = createBrowserRouter([
               {
                 path: "docente/grupos/:groupId/familias",
                 element: <FamiliesPage />,
+              },
+              {
+                path: "docente/reportes/:groupId",
+                element: <ReportPage />,
               },
               {
                 path: "docente/grupos/:groupId/estudiantes/agregar",

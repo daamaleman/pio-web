@@ -103,6 +103,9 @@ export default function GroupsPage() {
               >
                 Familias →
               </Link>
+              <Link to={`/docente/reportes/${g.id}`} className="hover:underline">
+                Reporte del mes →
+              </Link>
             </div>
           </section>
         ))}
