@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
 import { Bell, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "@/app/auth-context";
 import { ClimateBar, ClimateCard } from "@/components/ClimateCard";
@@ -12,19 +12,21 @@ import { ChatToggle, useSchoolGroupsChat } from "./ChatToggle";
 
 export default function SchoolHome() {
   const { role } = useAuth();
+  const { schoolId: paramId } = useParams();
   const schools = useMySchools();
   const currentMonday = mondayOf(todayISO());
   const [weekStart, setWeekStart] = useState(currentMonday);
-  const schoolId = schools.data?.[0]?.school_id;
+  const schoolId = paramId ?? schools.data?.[0]?.school_id;
+  const isAdmin = role === "admin";
   const overview = useSchoolOverview(schoolId, weekStart);
   const chat = useSchoolGroupsChat(schoolId);
   const isCurrentWeek = weekStart === currentMonday;
 
-  if (schools.isLoading)
+  if (!paramId && schools.isLoading)
     return (
       <div className="m-5 h-96 animate-pulse rounded-card bg-linea lg:m-10" />
     );
-  if (schools.error)
+  if (!paramId && schools.error)
     return (
       <div className="p-5 lg:p-10">
         <ErrorCard
@@ -103,19 +105,23 @@ export default function SchoolHome() {
             <Total value={o.totals.teachers} label="docentes" />
             <Total value={o.totals.students} label="estudiantes" />
             <Total value={o.totals.badges_earned} label="sellos" />
-            <Link
-              to="/escuela/alertas"
-              className={`col-span-2 rounded-card border px-3 py-4 text-center sm:col-span-1 ${o.totals.active_alerts > 0 ? "border-rosa bg-rosa-suave" : "border-linea bg-white"}`}
-            >
-              <p
-                className={`flex items-center justify-center gap-1.5 font-display text-2xl font-extrabold ${o.totals.active_alerts > 0 ? "text-rosa-profundo" : ""}`}
+            {isAdmin ? (
+              <Total value={o.totals.active_alerts} label="alertas activas" />
+            ) : (
+              <Link
+                to="/escuela/alertas"
+                className={`col-span-2 rounded-card border px-3 py-4 text-center sm:col-span-1 ${o.totals.active_alerts > 0 ? "border-rosa bg-rosa-suave" : "border-linea bg-white"}`}
               >
-                <Bell size={20} /> {o.totals.active_alerts}
-              </p>
-              <p className="text-xs font-semibold text-tinta/60">
-                alertas activas
-              </p>
-            </Link>
+                <p
+                  className={`flex items-center justify-center gap-1.5 font-display text-2xl font-extrabold ${o.totals.active_alerts > 0 ? "text-rosa-profundo" : ""}`}
+                >
+                  <Bell size={20} /> {o.totals.active_alerts}
+                </p>
+                <p className="text-xs font-semibold text-tinta/60">
+                  alertas activas
+                </p>
+              </Link>
+            )}
           </div>
 
           <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
@@ -190,18 +196,20 @@ export default function SchoolHome() {
                           <ClimateBar climate={g.climate} />
                         </div>
                       </div>
-                      <Link
-                        to={`/bienestar/${g.id}`}
-                        className="mt-3 inline-block text-sm font-bold text-azul hover:underline"
-                      >
-                        Bienestar del grupo →
-                      </Link>
+                      {!isAdmin && (
+                        <Link
+                          to={`/bienestar/${g.id}`}
+                          className="mt-3 inline-block text-sm font-bold text-azul hover:underline"
+                        >
+                          Bienestar del grupo →
+                        </Link>
+                      )}
                       {g.level === "secondary" && chat.data && (
                         <ChatToggle
                           groupId={g.id}
                           groupName={groupLabel(g)}
                           enabled={!!chat.data.get(g.id)}
-                          canEdit={role === "director"}
+                          canEdit={role === "director" || isAdmin}
                         />
                       )}
                     </li>

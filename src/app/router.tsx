@@ -3,7 +3,6 @@ import { HomeRedirect, RequireAuth, RequireRole } from "./guards";
 import { AppShell } from "@/components/layout/AppShell";
 import LoginPage from "@/features/auth/LoginPage";
 import ProfilePage from "@/features/auth/ProfilePage";
-import { Placeholder } from "@/features/placeholder/Placeholder";
 import TeacherHome from "@/features/teacher/TeacherHome";
 import LibraryPage from "@/features/teacher/LibraryPage";
 import AssignPage from "@/features/teacher/AssignPage";
@@ -25,6 +24,9 @@ import WellbeingPage from "@/features/wellbeing/WellbeingPage";
 import PlanPage from "@/features/teacher/PlanPage";
 import ReportPage from "@/features/reports/ReportPage";
 import QuestionsPage from "@/features/teacher/QuestionsPage";
+import AdminHome from "@/features/admin/AdminHome";
+import SchoolFormPage from "@/features/admin/SchoolFormPage";
+import CatalogPage from "@/features/admin/CatalogPage";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -131,10 +133,12 @@ export const router = createBrowserRouter([
           {
             element: <RequireRole roles={["admin"]} />,
             children: [
-              {
-                path: "admin",
-                element: <Placeholder title="Administración" step="W8" />,
-              },
+              { path: "admin", element: <AdminHome /> },
+              { path: "admin/catalogo", element: <CatalogPage /> },
+              { path: "admin/escuelas/nueva", element: <SchoolFormPage /> },
+              { path: "admin/escuelas/:schoolId", element: <SchoolHome /> },
+              { path: "admin/escuelas/:schoolId/editar", element: <SchoolFormPage /> },
+              { path: "admin/escuelas/:schoolId/personal", element: <StaffPage /> },
             ],
           },
         ],

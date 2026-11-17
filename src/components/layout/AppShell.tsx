@@ -5,6 +5,7 @@ import {
   House,
   LogOut,
   Smile,
+  School,
   UserPlus,
   Users,
   type LucideIcon,
@@ -34,7 +35,8 @@ const NAV: Record<StaffRole, NavItem[]> = {
     { to: "/yo", label: "Yo", icon: Smile },
   ],
   admin: [
-    { to: "/admin", label: "Inicio", icon: House, end: true },
+    { to: "/admin", label: "Escuelas", icon: School, end: true },
+    { to: "/admin/catalogo", label: "Catálogo", icon: BookOpen },
     { to: "/yo", label: "Yo", icon: Smile },
   ],
 };

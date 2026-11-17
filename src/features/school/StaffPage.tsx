@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { useParams } from 'react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { FunctionsHttpError } from '@supabase/supabase-js'
 import { Mail, UserPlus } from 'lucide-react'
@@ -9,6 +10,7 @@ import { initials } from '@/features/auth/useMyProfile'
 import { ROLE_LABEL, isStaff } from '@/lib/roles'
 import { relativeDay } from '@/lib/format'
 import { useMySchools } from './api'
+import { useAuth } from '@/app/auth-context'
 
 const INVITE_ERROR: Record<string, string> = {
   INVALID_EMAIL: 'Revisá el correo.',
@@ -46,13 +48,16 @@ function useSchoolStaff(schoolId: string | undefined) {
 }
 
 export default function StaffPage() {
+  const { schoolId: paramId } = useParams()
+  const { role: myRole } = useAuth()
   const schools = useMySchools()
-  const schoolId = schools.data?.[0]?.school_id
+  const schoolId = paramId ?? schools.data?.[0]?.school_id
+  const invitable = (myRole === 'admin' ? ['director', 'counselor', 'teacher'] : ['teacher', 'counselor']) as ('teacher' | 'counselor' | 'director')[]
   const staff = useSchoolStaff(schoolId)
   const qc = useQueryClient()
   const [email, setEmail] = useState('')
   const [fullName, setFullName] = useState('')
-  const [role, setRole] = useState<'teacher' | 'counselor'>('teacher')
+  const [role, setRole] = useState<'teacher' | 'counselor' | 'director'>('teacher')
 
   const invite = useMutation({
     mutationFn: async () => {
@@ -80,7 +85,7 @@ export default function StaffPage() {
     invite.mutate()
   }
 
-  if (schools.isLoading) return <div className="m-5 h-96 animate-pulse rounded-card bg-linea lg:m-10" />
+  if (!paramId && schools.isLoading) return <div className="m-5 h-96 animate-pulse rounded-card bg-linea lg:m-10" />
 
   const sorted = [...(staff.data ?? [])].sort((a, b) => (a.profiles?.role ?? '').localeCompare(b.profiles?.role ?? ''))
 
@@ -127,8 +132,8 @@ export default function StaffPage() {
             className="mt-1 w-full rounded-2xl border-2 border-linea px-4 py-2.5 outline-none focus:border-azul" />
 
           <p className="mt-3 text-sm font-bold">Rol</p>
-          <div className="mt-1 grid grid-cols-2 gap-2">
-            {(['teacher', 'counselor'] as const).map((r) => (
+          <div className={`mt-1 grid gap-2 ${invitable.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+            {invitable.map((r) => (
               <button key={r} type="button" onClick={() => setRole(r)} aria-pressed={role === r}
                 className={`rounded-full border-2 py-2.5 font-bold ${role === r ? 'border-azul bg-azul-suave text-azul' : 'border-linea'}`}>
                 {ROLE_LABEL[r]}
