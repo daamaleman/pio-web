@@ -27,6 +27,8 @@ import QuestionsPage from "@/features/teacher/QuestionsPage";
 import AdminHome from "@/features/admin/AdminHome";
 import SchoolFormPage from "@/features/admin/SchoolFormPage";
 import CatalogPage from "@/features/admin/CatalogPage";
+import LessonGuidePage from "@/features/teacher/LessonGuidePage";
+import FamilySheetPrintPage from "@/features/teacher/FamilySheetPrintPage";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -57,6 +59,8 @@ export const router = createBrowserRouter([
               { path: "docente", element: <TeacherHome /> },
               { path: "docente/plan", element: <PlanPage /> },
               { path: "docente/lecciones", element: <LibraryPage /> },
+              { path: "docente/lecciones/:lessonId", element: <LessonGuidePage /> },
+              { path: "docente/lecciones/:lessonId/ficha", element: <FamilySheetPrintPage /> },
               {
                 path: "docente/lecciones/:lessonId/asignar",
                 element: <AssignPage />,

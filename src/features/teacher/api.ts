@@ -219,3 +219,33 @@ export function useFamilyToken(groupId: string | undefined) {
     },
   });
 }
+
+export function useLessonGuide(lessonId: string | undefined) {
+  return useQuery({
+    queryKey: ['lesson-guide', lessonId],
+    enabled: !!lessonId,
+    queryFn: async () => {
+      const [lesson, minigames, steps] = await Promise.all([
+        supabase
+          .from('lessons')
+          .select('id, slug, level, grade, week, title, emotion, duration_min, parts_count, is_month_closure, teacher_guide, learnings, home_challenge, family_note')
+          .eq('id', lessonId!)
+          .single(),
+        supabase
+          .from('minigames')
+          .select('id, number_in_unit, name, template, duration_min, plan_content, indicator, teacher_evidence')
+          .eq('lesson_id', lessonId!)
+          .order('number_in_unit'),
+        supabase
+          .from('lesson_steps')
+          .select('position, part, kind, is_skippable, is_private, minigame_id')
+          .eq('lesson_id', lessonId!)
+          .order('position'),
+      ])
+      if (lesson.error) throw lesson.error
+      if (minigames.error) throw minigames.error
+      if (steps.error) throw steps.error
+      return { lesson: lesson.data, minigames: minigames.data, steps: steps.data }
+    },
+  })
+}

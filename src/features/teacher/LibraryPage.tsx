@@ -124,7 +124,7 @@ export default function LibraryPage() {
                         <p className="text-[11px] font-extrabold uppercase tracking-wide text-tinta/60">
                           {e ? EMOTIONS[e].label : "Lección"} · Semana {l.week}
                         </p>
-                        <p className="truncate font-bold">{title}</p>
+                        <Link to={`/docente/lecciones/${l.id}`} className="block truncate font-bold hover:text-azul hover:underline">{title}</Link>
                         <p className="text-xs text-tinta/60">
                           {l.duration_min ? `${l.duration_min} min · ` : ""}
                           {l.parts_count} partes
