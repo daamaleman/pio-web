@@ -5,11 +5,13 @@ import { EmotionDrop } from '@/components/EmotionDrop'
 import type { Emotion } from '@/lib/emotions'
 import { pickText } from '@/lib/format'
 import { useCatalog } from './api'
+import { usePageTitle } from '@/lib/usePageTitle'
 
 const LANGS = ['es', 'en', 'miq'] as const
 const LANG_LABEL = { es: 'Español', en: 'Inglés', miq: 'Miskito' }
 
 export default function CatalogPage() {
+  usePageTitle('Catálogo')
   const catalog = useCatalog()
   const lessons = catalog.data ?? []
   const groups = [

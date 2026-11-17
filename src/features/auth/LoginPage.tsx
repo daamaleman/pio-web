@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { readClaims } from "@/lib/claims";
 import { isStaff } from "@/lib/roles";
 import { useAuth } from "@/app/auth-context";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 function loginMessage(error: AuthError): string {
   if (error.code === "invalid_credentials")
@@ -17,6 +18,7 @@ function loginMessage(error: AuthError): string {
 }
 
 export default function LoginPage() {
+  usePageTitle("Entrar");
   const { loading, session, role } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

@@ -12,6 +12,7 @@ import {
   type AssignmentProgress,
   type IndicatorResult,
 } from "./api";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 const AVATAR = [
   "#374EA2",
@@ -62,6 +63,7 @@ function remindMessage(r: RemindResult): string {
 }
 
 export default function ProgressPage() {
+  usePageTitle("Progreso");
   const { id } = useParams();
   const progress = useAssignmentProgress(id);
   const [tab, setTab] = useState<"done" | "pending">("done");

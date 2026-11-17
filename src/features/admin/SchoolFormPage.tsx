@@ -7,9 +7,11 @@ import { supabase } from '@/lib/supabase'
 import { ErrorCard } from '@/components/ui/Card'
 import { Toggle } from '@/components/ui/Toggle'
 import { DEPARTMENTS, useAllSchools } from './api'
+import { usePageTitle } from '@/lib/usePageTitle'
 
 export default function SchoolFormPage() {
   const { schoolId } = useParams()
+  usePageTitle(schoolId ? 'Editar escuela' : 'Nueva escuela')
   const editing = !!schoolId
   const navigate = useNavigate()
   const qc = useQueryClient()

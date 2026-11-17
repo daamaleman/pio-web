@@ -9,10 +9,12 @@ import { initials } from '@/features/auth/useMyProfile'
 import { groupLabel, norm } from '@/lib/format'
 import { useGroupStudents, useMyGroups } from '@/features/teacher/api'
 import { PinCard } from './PinCard'
+import { usePageTitle } from '@/lib/usePageTitle'
 
 type NewPin = { student_id: string; display_name: string; pin: string }
 
 export default function StudentsPage() {
+  usePageTitle('Estudiantes')
   const { groupId } = useParams()
   const groups = useMyGroups()
   const group = groups.data?.find((g) => g.id === groupId)

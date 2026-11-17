@@ -4,8 +4,10 @@ import { ArrowLeft, Copy, ExternalLink, Printer } from "lucide-react";
 import { ErrorCard } from "@/components/ui/Card";
 import { groupLabel, publicBase } from "@/lib/format";
 import { useFamilyToken, useGroupOverview, useMyGroups } from "./api";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 export default function FamilyQrPage() {
+  usePageTitle("QR para familias");
   const { groupId } = useParams();
   const groups = useMyGroups();
   const group = groups.data?.find((g) => g.id === groupId);

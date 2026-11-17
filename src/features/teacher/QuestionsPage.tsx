@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase'
 import { ErrorCard } from '@/components/ui/Card'
 import { groupLabel, pickText, shortDate } from '@/lib/format'
 import { useMyGroups } from './api'
+import { usePageTitle } from '@/lib/usePageTitle'
 
 type Status = 'new' | 'answered' | 'hidden'
 
@@ -33,6 +34,7 @@ function useQuestions(groupId: string | undefined) {
 }
 
 export default function QuestionsPage() {
+  usePageTitle('Buzón de preguntas')
   const { groupId } = useParams()
   const qc = useQueryClient()
   const groups = useMyGroups()

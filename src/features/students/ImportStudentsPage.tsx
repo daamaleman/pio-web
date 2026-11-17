@@ -14,6 +14,7 @@ import { groupLabel } from "@/lib/format";
 import { useGroupStudents, useMyGroups } from "@/features/teacher/api";
 import { PinCard, PinCardSheet } from "./PinCard";
 import { buildPreview, MAX_ROWS, ROW_ERROR } from "./rules";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 type ImportResult = {
   created: { id: string; display_name: string; pin: string }[];
@@ -61,6 +62,7 @@ async function functionErrorCode(error: unknown): Promise<string> {
 }
 
 export default function ImportStudentsPage() {
+  usePageTitle("Agregar estudiantes");
   const { groupId } = useParams();
   const qc = useQueryClient();
   const groups = useMyGroups();

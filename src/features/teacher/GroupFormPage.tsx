@@ -9,6 +9,7 @@ import { ErrorCard } from "@/components/ui/Card";
 import { groupLabel, todayISO } from "@/lib/format";
 import { useMySchools } from "@/features/school/api";
 import { useMyGroups } from "./api";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 // MVP scope: the grades that have lessons
 const OFFERS = [
@@ -44,6 +45,7 @@ function groupError(e: PostgrestError): string {
 
 export default function GroupFormPage() {
   const { groupId } = useParams();
+  usePageTitle(groupId ? "Editar grupo" : "Nuevo grupo");
   const editing = !!groupId;
   const navigate = useNavigate();
   const qc = useQueryClient();

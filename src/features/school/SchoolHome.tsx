@@ -9,8 +9,10 @@ import { groupLabel, shortDate, todayISO } from "@/lib/format";
 import { ROLE_LABEL, isStaff } from "@/lib/roles";
 import { useMySchools, useSchoolOverview } from "./api";
 import { ChatToggle, useSchoolGroupsChat } from "./ChatToggle";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 export default function SchoolHome() {
+  usePageTitle("Mi escuela");
   const { role } = useAuth();
   const { schoolId: paramId } = useParams();
   const schools = useMySchools();

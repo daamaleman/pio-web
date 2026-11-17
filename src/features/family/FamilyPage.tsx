@@ -5,6 +5,7 @@ import { EmotionDrop } from '@/components/EmotionDrop'
 import { EMOTIONS, type Emotion } from '@/lib/emotions'
 import { groupLabel, pickText, shortDate } from '@/lib/format'
 import type { Json } from '@/lib/database.types'
+import { usePageTitle } from '@/lib/usePageTitle'
 
 type FamilyWeek = {
   group: { level: string; grade: number; section: string; language: string; school_name: string }
@@ -63,6 +64,7 @@ const T = {
 }
 
 export default function FamilyPage() {
+  usePageTitle('Espacio para la familia')
   const { token } = useParams()
   const week = useQuery({
     queryKey: ['family-week', token],

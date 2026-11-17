@@ -2,8 +2,10 @@ import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
 import { supabase } from '@/lib/supabase'
 import { publicBase } from '@/lib/format'
+import { usePageTitle } from '@/lib/usePageTitle'
 
 export default function ForgotPasswordPage() {
+  usePageTitle('Recuperar contraseña')
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
   const [error, setError] = useState<string | null>(null)

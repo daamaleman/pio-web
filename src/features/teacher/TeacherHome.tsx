@@ -19,6 +19,7 @@ import {
   type OverviewAssignment,
 } from "./api";
 import { useSelectedGroup } from "./useSelectedGroup";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 function currentAssignment(
   list: OverviewAssignment[],
@@ -34,6 +35,7 @@ function currentAssignment(
 }
 
 export default function TeacherHome() {
+  usePageTitle("Inicio");
   const groups = useMyGroups();
   const [group, selectGroup] = useSelectedGroup(groups.data);
   const overview = useGroupOverview(group?.id);

@@ -8,6 +8,7 @@ import { groupLabel, pickText, shortDate, todayISO } from '@/lib/format'
 import { defaultTone, downloadPioWorkbook } from '@/lib/excelTemplate'
 import { useMyProfile } from '@/features/auth/useMyProfile'
 import { useGroupOverview, useGroupStudents, useMyGroups, type AssignmentProgress } from '@/features/teacher/api'
+import { usePageTitle } from '@/lib/usePageTitle'
 
 const RESULT: Record<string, string> = {
   achieved: 'Logrado',
@@ -47,6 +48,7 @@ function useMonthAssignments(groupId: string | undefined, month: string) {
 type Column = { key: string; label: string; assignmentId: string; indicator?: number }
 
 export default function ReportPage() {
+  usePageTitle('Reporte del mes')
   const { groupId } = useParams()
   const groups = useMyGroups()
   const group = groups.data?.find((g) => g.id === groupId)

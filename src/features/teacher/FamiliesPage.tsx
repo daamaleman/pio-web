@@ -10,6 +10,7 @@ import { EMOTIONS, type Emotion } from '@/lib/emotions'
 import { groupLabel, pickText, relativeDay } from '@/lib/format'
 import { initials } from '@/features/auth/useMyProfile'
 import { useGroupAssignments, useGroupStudents, useLessons, useMyGroups } from './api'
+import { usePageTitle } from '@/lib/usePageTitle'
 
 type Done = 'yes' | 'partly' | 'no'
 type How = 'interest' | 'difficulty' | 'declined'
@@ -47,6 +48,7 @@ function useFamilyData(studentIds: string[]) {
 }
 
 export default function FamiliesPage() {
+  usePageTitle('Familias')
   const { groupId } = useParams()
   const groups = useMyGroups()
   const group = groups.data?.find((g) => g.id === groupId)

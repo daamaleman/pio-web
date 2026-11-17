@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router'
 import type { AuthError, EmailOtpType } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/app/auth-context'
+import { usePageTitle } from '@/lib/usePageTitle'
 
 function passwordError(e: AuthError): string {
   if (e.code === 'same_password') return 'Esa ya es tu contraseña. Elegí una distinta.'
@@ -27,6 +28,7 @@ function linkErrorText(code: string) {
 }
 
 export default function SetPasswordPage({ mode }: { mode: 'invite' | 'recovery' }) {
+  usePageTitle(mode === 'invite' ? 'Crear contraseña' : 'Nueva contraseña')
   const { loading, session } = useAuth()
   const navigate = useNavigate()
   const [link] = useState(readLink)

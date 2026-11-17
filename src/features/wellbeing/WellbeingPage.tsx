@@ -4,6 +4,7 @@ import { ArrowLeft, ChevronLeft, ChevronRight, Lock } from 'lucide-react'
 import { Card, ErrorCard } from '@/components/ui/Card'
 import { groupLabel, pickText, todayISO } from '@/lib/format'
 import { useGroup, usePollContent, usePollLessons, usePollResult, useSelfAssessment, type SAPart } from './api'
+import { usePageTitle } from '@/lib/usePageTitle'
 
 const SCALE = [
   { key: '1', label: 'Todavía no', color: '#FFE3EE' },
@@ -24,6 +25,7 @@ function monthLabel(first: string) {
 }
 
 export default function WellbeingPage() {
+  usePageTitle('Bienestar del grupo')
   const { groupId } = useParams()
   const navigate = useNavigate()
   const group = useGroup(groupId)

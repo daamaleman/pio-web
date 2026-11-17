@@ -10,6 +10,7 @@ import { OBS_CATEGORY } from '@/features/alerts/alertTexts'
 import { initials } from '@/features/auth/useMyProfile'
 import { groupLabel, pickText, shortDate, todayISO } from '@/lib/format'
 import { useGroupAssignments, useLessons, useMyGroups } from '@/features/teacher/api'
+import { usePageTitle } from '@/lib/usePageTitle'
 
 function useStudent(studentId: string | undefined) {
   return useQuery({
@@ -45,6 +46,7 @@ const SAVE_ERROR: Record<string, string> = {
 }
 
 export default function StudentPage() {
+  usePageTitle('Ficha del estudiante')
   const { groupId, studentId } = useParams()
   const { session } = useAuth()
   const qc = useQueryClient()

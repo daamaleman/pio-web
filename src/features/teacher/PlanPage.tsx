@@ -15,6 +15,7 @@ import { classDates, classDatesInMonth } from "@/lib/classDates";
 import { groupLabel, pickText, shortDate, todayISO } from "@/lib/format";
 import { useGroupAssignments, useLessons, useMyGroups } from "./api";
 import { useSelectedGroup } from "./useSelectedGroup";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 const WEEKDAY = [
   "",
@@ -34,6 +35,7 @@ function shiftMonth(first: string, delta: number) {
 }
 
 export default function PlanPage() {
+  usePageTitle("Plan del mes");
   const groups = useMyGroups();
   const [group, selectGroup] = useSelectedGroup(groups.data);
   const lessons = useLessons(group);

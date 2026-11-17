@@ -12,6 +12,7 @@ import { Toggle } from '@/components/ui/Toggle'
 import { initials } from '@/features/auth/useMyProfile'
 import { useGroupAssignments, useGroupStudents, useLessons, useMyGroups } from './api'
 import { useSelectedGroup } from './useSelectedGroup'
+import { usePageTitle } from '@/lib/usePageTitle'
 
 function assignError(e: PostgrestError): string {
   if (e.code === '23505') return 'Esta lección ya está asignada a este grupo.'
@@ -23,6 +24,7 @@ function assignError(e: PostgrestError): string {
 }
 
 export default function AssignPage() {
+  usePageTitle('Asignar lección')
   const { lessonId } = useParams()
   const navigate = useNavigate()
   const qc = useQueryClient()
