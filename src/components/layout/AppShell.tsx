@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from "react-router";
+import { useEffect } from "react";
 import {
   Bell,
   BookOpen,
@@ -13,37 +14,42 @@ import {
 import { useAuth } from "@/app/auth-context";
 import { isStaff, ROLE_LABEL, type StaffRole } from "@/lib/roles";
 import { initials, useMyProfile } from "@/features/auth/useMyProfile";
+import i18n, { isLang, t } from "@/i18n";
 
 type NavItem = { to: string; label: string; icon: LucideIcon; end?: boolean };
 
 const NAV: Record<StaffRole, NavItem[]> = {
   teacher: [
-    { to: "/docente", label: "Inicio", icon: House, end: true },
-    { to: "/docente/lecciones", label: "Lecciones", icon: BookOpen },
-    { to: "/docente/grupos", label: "Grupos", icon: Users },
-    { to: "/yo", label: "Yo", icon: Smile },
+    { to: "/docente", label: "nav.home", icon: House, end: true },
+    { to: "/docente/lecciones", label: "nav.lessons", icon: BookOpen },
+    { to: "/docente/grupos", label: "nav.groups", icon: Users },
+    { to: "/yo", label: "nav.me", icon: Smile },
   ],
   director: [
-    { to: "/escuela", label: "Inicio", icon: House, end: true },
-    { to: "/escuela/alertas", label: "Alertas", icon: Bell },
-    { to: "/escuela/personal", label: "Personal", icon: UserPlus },
-    { to: "/yo", label: "Yo", icon: Smile },
+    { to: "/escuela", label: "nav.home", icon: House, end: true },
+    { to: "/escuela/alertas", label: "nav.alerts", icon: Bell },
+    { to: "/escuela/personal", label: "nav.staff", icon: UserPlus },
+    { to: "/yo", label: "nav.me", icon: Smile },
   ],
   counselor: [
-    { to: "/escuela", label: "Inicio", icon: House, end: true },
-    { to: "/escuela/alertas", label: "Alertas", icon: Bell },
-    { to: "/yo", label: "Yo", icon: Smile },
+    { to: "/escuela", label: "nav.home", icon: House, end: true },
+    { to: "/escuela/alertas", label: "nav.alerts", icon: Bell },
+    { to: "/yo", label: "nav.me", icon: Smile },
   ],
   admin: [
-    { to: "/admin", label: "Escuelas", icon: School, end: true },
-    { to: "/admin/catalogo", label: "Catálogo", icon: BookOpen },
-    { to: "/yo", label: "Yo", icon: Smile },
+    { to: "/admin", label: "nav.schools", icon: School, end: true },
+    { to: "/admin/catalogo", label: "nav.catalog", icon: BookOpen },
+    { to: "/yo", label: "nav.me", icon: Smile },
   ],
 };
 
 export function AppShell() {
   const { role, signOut } = useAuth();
   const { data: profile } = useMyProfile();
+  useEffect(() => {
+    const lang = profile?.preferred_language
+    if (isLang(lang) && lang !== i18n.language) i18n.changeLanguage(lang)
+  }, [profile?.preferred_language])
   if (!isStaff(role)) return null;
   const items = NAV[role];
 
@@ -67,7 +73,7 @@ export function AppShell() {
               }
             >
               <Icon size={20} strokeWidth={2.2} />
-              {label}
+              {t(label)}
             </NavLink>
           ))}
         </nav>
@@ -83,7 +89,7 @@ export function AppShell() {
           </div>
           <button
             onClick={signOut}
-            title="Cerrar sesión"
+            title={t("common.signOut")}
             className="rounded-full p-2 text-tinta/60 hover:bg-arena"
           >
             <LogOut size={18} />
@@ -119,7 +125,7 @@ export function AppShell() {
                 >
                   <Icon size={22} strokeWidth={2.2} />
                 </span>
-                {label}
+                {t(label)}
               </>
             )}
           </NavLink>

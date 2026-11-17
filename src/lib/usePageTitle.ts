@@ -1,13 +1,12 @@
 import { useEffect } from 'react'
-
-export const APP_TITLE = 'Pío · Aprendo a sentir, un día a la vez'
+import { t } from '@/i18n'
 
 // "Lecciones · Pío" while the page is open; back to the app title when it closes
 export function usePageTitle(title?: string) {
   useEffect(() => {
-    document.title = title ? `${title} · Pío` : APP_TITLE
+    document.title = title ? `${title} · Pío` : t('app.title')
     return () => {
-      document.title = APP_TITLE
+      document.title = t('app.title')
     }
   }, [title])
 }

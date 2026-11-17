@@ -1,18 +1,7 @@
 import type { Json } from "./database.types";
+import { locale, t } from '@/i18n'
 
 const TZ = "America/Managua";
-const dayFmt = new Intl.DateTimeFormat("en-CA", { timeZone: TZ });
-const timeFmt = new Intl.DateTimeFormat("es-NI", {
-  timeZone: TZ,
-  hour: "numeric",
-  minute: "2-digit",
-  hour12: true,
-});
-const weekdayFmt = new Intl.DateTimeFormat("es-NI", {
-  timeZone: TZ,
-  weekday: "long",
-});
-
 // "2026-11-15" in Nicaragua time (not UTC)
 export function todayISO(): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(new Date());
@@ -26,14 +15,14 @@ export function greeting(): string {
       hourCycle: "h23",
     }).format(new Date()),
   );
-  if (hour < 12) return "Buenos días";
-  if (hour < 18) return "Buenas tardes";
-  return "Buenas noches";
+  if (hour < 12) return t('greeting.morning');
+  if (hour < 18) return t('greeting.afternoon');
+  return t('greeting.evening');
 }
 
 // "2026-11-16" -> "lun 16 nov". Uses noon UTC so the day never shifts.
 export function shortDate(iso: string): string {
-  return new Intl.DateTimeFormat("es-NI", {
+  return new Intl.DateTimeFormat(locale(), {
     weekday: "short",
     day: "numeric",
     month: "short",
@@ -46,16 +35,17 @@ export function shortDate(iso: string): string {
 // "hoy, 7:12 p. m." · "ayer, 6:40 p. m." · "el lunes" · "el 2 nov"
 export function relativeDay(timestamp: string): string {
   const d = new Date(timestamp);
-  const day = dayFmt.format(d);
+  const day = new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(d);
+  const time = new Intl.DateTimeFormat(locale(), { timeZone: TZ, hour: "numeric", minute: "2-digit", hour12: true }).format(d);
   const today = todayISO();
   const diff = Math.round(
     (Date.parse(`${today}T12:00:00Z`) - Date.parse(`${day}T12:00:00Z`)) /
       86_400_000,
   );
-  if (diff === 0) return `hoy, ${timeFmt.format(d)}`;
-  if (diff === 1) return `ayer, ${timeFmt.format(d)}`;
-  if (diff > 1 && diff < 7) return `el ${weekdayFmt.format(d)}`;
-  return `el ${shortDate(day).replace(/^\S+\s/, "")}`;
+  if (diff === 0) return t('time.today', { time });
+  if (diff === 1) return t('time.yesterday', { time });
+  if (diff > 1 && diff < 7) return t('time.weekday', { day: new Intl.DateTimeFormat(locale(), { timeZone: TZ, weekday: 'long' }).format(d) });
+  return t('time.date', { date: new Intl.DateTimeFormat(locale(), { day: 'numeric', month: 'short', timeZone: TZ }).format(d).replace(/\./g, '') });
 }
 
 // Lesson titles come as { "es": "...", "en": "..." }
@@ -74,8 +64,9 @@ export function groupLabel(g: {
   grade: number;
   section: string;
 }): string {
-  if (g.level === "primary") return `${g.grade}.º grado ${g.section}`;
-  return `${g.grade === 1 ? "1.er" : `${g.grade}.º`} año ${g.section}`;
+  if (g.level === "primary") return t('group.primary', { grade: g.grade, section: g.section });
+  if (g.grade === 1) return t('group.secondaryFirst', { section: g.section });
+  return t('group.secondary', { grade: g.grade, section: g.section });
 }
 
 // For searching without caring about accents or case ("enojo" finds "Enójo")

@@ -12,7 +12,7 @@ export function useMyProfile() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, full_name, role")
+        .select("id, full_name, role, preferred_language")
         .eq("id", userId!)
         .single();
       if (error) throw error;

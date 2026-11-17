@@ -1,0 +1,21 @@
+{
+  "app": { "title": "Pío · Learning to feel, one day at a time" },
+  "common": { "retry": "Try again", "back": "Back", "loading": "Loading…", "save": "Save", "cancel": "Cancel", "signOut": "Sign out", "exit": "Sign out" },
+  "nav": { "home": "Home", "lessons": "Lessons", "groups": "Groups", "me": "Me", "alerts": "Alerts", "staff": "Staff", "schools": "Schools", "catalog": "Catalog" },
+  "role": { "teacher": "Teacher", "director": "Principal", "counselor": "Counselor", "admin": "Administration" },
+  "emotion": { "joy": "Joy", "sadness": "Sadness", "anger": "Anger", "fear": "Fear", "calm": "Calm", "love": "Love" },
+  "greeting": { "morning": "Good morning", "afternoon": "Good afternoon", "evening": "Good evening" },
+  "time": { "today": "today, {{time}}", "yesterday": "yesterday, {{time}}", "weekday": "on {{day}}", "date": "on {{date}}" },
+  "group": { "primary": "Grade {{grade}} {{section}}", "secondary": "Year {{grade}} {{section}}", "secondaryFirst": "Year 1 {{section}}" },
+  "login": {
+    "title": "Hello, teacher!", "subtitle": "Sign in with the email from your invitation.", "email": "Email", "password": "Password", "submit": "Sign in", "submitting": "Signing in…", "forgot": "Forgot your password?", "sideText": "See how your class feels, assign the weekly lesson and support whoever needs it.",
+    "errors": { "invalid": "Wrong email or password.", "notConfirmed": "First accept the invitation sent to your email.", "tooMany": "Too many attempts in a row. Please wait a moment.", "generic": "We couldn't sign you in. Check your connection and try again.", "noAccess": "This account has no access to the portal." }
+  },
+  "forgot": { "title": "Forgot your password?", "subtitle": "We'll send a link to your email.", "send": "Send link", "sending": "Sending…", "sent": "If that email is registered in Pío, you'll get a link to create a new password. Check your spam folder too.", "tooSoon": "You asked for a link a moment ago. Please wait a few minutes.", "backToLogin": "Back to sign in" },
+  "setPassword": {
+    "inviteTitle": "Welcome to Pío!", "recoveryTitle": "New password", "verifying": "Checking the link…", "invalidLink": "The link is not valid or was already used.", "expiredLink": "The link expired (it lasts 24 hours) or was already used.", "badLink": "The link is not valid.", "askInviteAgain": "Ask your school's principal to invite you again, or ", "newLink": "request a new link", "inviteSubtitle": "Create your password to enter the portal.", "recoverySubtitle": "Type your new password.", "password": "Password", "repeat": "Repeat it", "min8": "At least 8 characters.", "tooShort": "Use at least 8 characters.", "mismatch": "The two passwords don't match.", "same": "That's already your password. Choose a different one.", "weak": "Choose a stronger password: at least 8 characters, with letters and numbers.", "generic": "We couldn't save the password. Please try again.", "saving": "Saving…", "save": "Save and enter"
+  },
+  "noAccess": { "title": "This account has no access to the portal", "text": "The portal is for teachers, principals and counselors." },
+  "placeholder": { "comingIn": "This screen arrives in {{step}}." },
+  "profile": { "title": "Me", "loadError": "We couldn't load your profile.", "language": "Portal language", "languageHint": "Saved in your account. Your students' lessons use each group's language.", "spanish": "Español", "english": "English", "miskito": "Miskito (coming soon)", "saveError": "We couldn't change the language." }
+}

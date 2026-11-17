@@ -1,10 +1,12 @@
+import { t } from '@/i18n'
+
 export const EMOTIONS = {
-  joy: { label: 'Alegría', color: '#FFC20E' },
-  sadness: { label: 'Tristeza', color: '#8FD6F2' },
-  anger: { label: 'Enojo', color: '#FF8A80' },
-  fear: { label: 'Miedo', color: '#C9A3D1' },
-  calm: { label: 'Calma', color: '#B8DC8E' },
-  love: { label: 'Cariño', color: '#FF9EBF' },
+  joy: { color: '#FFC20E', get label() { return t('emotion.joy') } },
+  sadness: { color: '#8FD6F2', get label() { return t('emotion.sadness') } },
+  anger: { color: '#FF8A80', get label() { return t('emotion.anger') } },
+  fear: { color: '#C9A3D1', get label() { return t('emotion.fear') } },
+  calm: { color: '#B8DC8E', get label() { return t('emotion.calm') } },
+  love: { color: '#FF9EBF', get label() { return t('emotion.love') } },
 } as const
 
 export type Emotion = keyof typeof EMOTIONS

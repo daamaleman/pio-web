@@ -1,0 +1,21 @@
+{
+  "app": { "title": "Pío · Aprendo a sentir, un día a la vez" },
+  "common": { "retry": "Reintentar", "back": "Volver", "loading": "Cargando…", "save": "Guardar", "cancel": "Cancelar", "signOut": "Cerrar sesión", "exit": "Salir" },
+  "nav": { "home": "Inicio", "lessons": "Lecciones", "groups": "Grupos", "me": "Yo", "alerts": "Alertas", "staff": "Personal", "schools": "Escuelas", "catalog": "Catálogo" },
+  "role": { "teacher": "Docente", "director": "Dirección", "counselor": "Orientación", "admin": "Administración" },
+  "emotion": { "joy": "Alegría", "sadness": "Tristeza", "anger": "Enojo", "fear": "Miedo", "calm": "Calma", "love": "Cariño" },
+  "greeting": { "morning": "Buenos días", "afternoon": "Buenas tardes", "evening": "Buenas noches" },
+  "time": { "today": "hoy, {{time}}", "yesterday": "ayer, {{time}}", "weekday": "el {{day}}", "date": "el {{date}}" },
+  "group": { "primary": "{{grade}}.º grado {{section}}", "secondary": "{{grade}}.º año {{section}}", "secondaryFirst": "1.er año {{section}}" },
+  "login": {
+    "title": "¡Hola, profe!", "subtitle": "Entrá con el correo de tu invitación.", "email": "Correo", "password": "Contraseña", "submit": "Entrar", "submitting": "Entrando…", "forgot": "¿Olvidaste tu contraseña?", "sideText": "Mirá cómo se siente tu grupo, asigná la lección de la semana y acompañá a quien lo necesita.",
+    "errors": { "invalid": "Correo o contraseña incorrectos.", "notConfirmed": "Primero aceptá la invitación que llegó a tu correo.", "tooMany": "Demasiados intentos seguidos. Esperá un momento.", "generic": "No pudimos entrar. Revisá tu conexión e intentá de nuevo.", "noAccess": "Esta cuenta no tiene acceso al portal." }
+  },
+  "forgot": { "title": "¿Olvidaste tu contraseña?", "subtitle": "Te mandamos un enlace a tu correo.", "send": "Enviar enlace", "sending": "Enviando…", "sent": "Si ese correo está registrado en Pío, te llegará un enlace para crear una contraseña nueva. Revisá también la carpeta de spam.", "tooSoon": "Ya pediste un enlace hace poco. Esperá unos minutos.", "backToLogin": "Volver al inicio de sesión" },
+  "setPassword": {
+    "inviteTitle": "¡Bienvenida a Pío!", "recoveryTitle": "Nueva contraseña", "verifying": "Verificando el enlace…", "invalidLink": "El enlace no es válido o ya se usó.", "expiredLink": "El enlace venció (dura 24 horas) o ya se usó.", "badLink": "El enlace no es válido.", "askInviteAgain": "Pedile a la dirección de tu escuela que te invite de nuevo, o ", "newLink": "pedí un enlace nuevo", "inviteSubtitle": "Creá tu contraseña para entrar al portal.", "recoverySubtitle": "Escribí tu nueva contraseña.", "password": "Contraseña", "repeat": "Repetila", "min8": "Al menos 8 caracteres.", "tooShort": "Usá al menos 8 caracteres.", "mismatch": "Las dos contraseñas no coinciden.", "same": "Esa ya es tu contraseña. Elegí una distinta.", "weak": "Elegí una contraseña más segura: al menos 8 caracteres, con letras y números.", "generic": "No pudimos guardar la contraseña. Intentá de nuevo.", "saving": "Guardando…", "save": "Guardar y entrar"
+  },
+  "noAccess": { "title": "Esta cuenta no tiene acceso al portal", "text": "El portal es para docentes, dirección y orientación." },
+  "placeholder": { "comingIn": "Esta pantalla llega en {{step}}." },
+  "profile": { "title": "Yo", "loadError": "No pudimos cargar tu perfil.", "language": "Idioma del portal", "languageHint": "Se guarda en tu cuenta. Las lecciones de tus estudiantes usan la lengua de cada grupo.", "spanish": "Español", "english": "English", "miskito": "Miskito (próximamente)", "saveError": "No pudimos cambiar el idioma." }
+}

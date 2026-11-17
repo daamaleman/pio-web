@@ -1,4 +1,5 @@
 import type { Database } from './database.types'
+import { t } from '@/i18n'
 
 export type AppRole = Database['public']['Enums']['app_role']
 export type StaffRole = Exclude<AppRole, 'student'>
@@ -10,10 +11,10 @@ export function isStaff(role: unknown): role is StaffRole {
 }
 
 export const ROLE_LABEL: Record<StaffRole, string> = {
-  teacher: 'Docente',
-  director: 'Dirección',
-  counselor: 'Orientación',
-  admin: 'Administración',
+  get teacher() { return t('role.teacher') },
+  get director() { return t('role.director') },
+  get counselor() { return t('role.counselor') },
+  get admin() { return t('role.admin') },
 }
 
 export function homeFor(role: StaffRole): string {
