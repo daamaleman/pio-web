@@ -17,5 +17,5 @@
   },
   "noAccess": { "title": "Esta cuenta no tiene acceso al portal", "text": "El portal es para docentes, dirección y orientación." },
   "placeholder": { "comingIn": "Esta pantalla llega en {{step}}." },
-  "profile": { "title": "Yo", "loadError": "No pudimos cargar tu perfil.", "language": "Idioma del portal", "languageHint": "Se guarda en tu cuenta. Las lecciones de tus estudiantes usan la lengua de cada grupo.", "spanish": "Español", "english": "English", "miskito": "Miskito (próximamente)", "saveError": "No pudimos cambiar el idioma." }
+  "profile": { "title": "Yo", "loadError": "No pudimos cargar tu perfil.", "language": "Idioma del portal", "languageHint": "Se guarda en tu cuenta. Las lecciones de tus estudiantes usan la lengua de cada grupo.", "spanish": "Español", "english": "English", "miskito": "Miskitu", "partial": "Traducción en curso: lo que todavía no está en miskitu se ve en español.", "saveError": "No pudimos cambiar el idioma." }
 }

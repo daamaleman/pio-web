@@ -17,5 +17,5 @@
   },
   "noAccess": { "title": "This account has no access to the portal", "text": "The portal is for teachers, principals and counselors." },
   "placeholder": { "comingIn": "This screen arrives in {{step}}." },
-  "profile": { "title": "Me", "loadError": "We couldn't load your profile.", "language": "Portal language", "languageHint": "Saved in your account. Your students' lessons use each group's language.", "spanish": "Español", "english": "English", "miskito": "Miskito (coming soon)", "saveError": "We couldn't change the language." }
+  "profile": { "title": "Me", "loadError": "We couldn't load your profile.", "language": "Portal language", "languageHint": "Saved in your account. Your students' lessons use each group's language.", "spanish": "Español", "english": "English", "miskito": "Miskitu", "partial": "Translation in progress: what is not yet in Miskitu shows in Spanish.", "saveError": "We couldn't change the language." }
 }

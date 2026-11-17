@@ -1,0 +1,11 @@
+{
+  "common": {
+    "exit": "Takaia"
+  },
+  "emotion": {
+    "sadness": "Sari laka",
+    "anger": "Kupia babaikra",
+    "fear": "Sibrin",
+    "calm": "Sap takaia"
+  }
+}

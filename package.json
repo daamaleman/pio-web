@@ -7,6 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "i18n:export": "node scripts/i18n-export.mjs",
+    "i18n:glossary": "node scripts/i18n-glossary.mjs",
+    "i18n:import": "node scripts/i18n-import.mjs translations.csv",
     "preview": "vite preview",
     "gen:types": "supabase gen types typescript --remote=uoqzwcuggirgkbyszjsy --schema public > src/lib/database.types.ts"
   },

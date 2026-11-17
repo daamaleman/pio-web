@@ -27,13 +27,13 @@ export default function ProfilePage() {
   })
 
   const current = i18n.language
-  const option = (lang: Lang | 'miq', label: string) => (
+  const option = (lang: Lang, label: string) => (
     <button
       key={lang}
       type="button"
-      disabled={lang === 'miq' || setLang.isPending}
+      disabled={setLang.isPending}
       aria-pressed={current === lang}
-      onClick={() => lang !== 'miq' && setLang.mutate(lang)}
+      onClick={() => setLang.mutate(lang)}
       className={`rounded-full border-2 px-4 py-2.5 text-sm font-bold disabled:opacity-50 ${current === lang ? 'border-azul bg-azul-suave text-azul' : 'border-linea bg-white'}`}
     >
       {label}
@@ -60,6 +60,7 @@ export default function ProfilePage() {
             {option('miq', t('profile.miskito'))}
           </div>
           <p className="mt-2 text-xs text-tinta/60">{t('profile.languageHint')}</p>
+          {current === 'miq' && <p className="mt-1 text-xs font-bold text-azul">{t('profile.partial')}</p>}
           {setLang.error && <p role="alert" className="mt-2 text-sm font-bold text-rosa-profundo">{t('profile.saveError')}</p>}
         </section>
         <button onClick={signOut} className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-linea bg-white py-3 font-display text-lg font-bold">
