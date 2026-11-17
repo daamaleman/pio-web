@@ -33,3 +33,10 @@ body {
 h1, h2, h3 {
   @apply font-display;
 }
+
+/* Print: only the page content, never the app chrome or anything injected outside the app */
+@media print {
+  body > *:not(#root) { display: none !important; }
+  nav, aside { display: none !important; }
+  body { background: #fff; }
+}

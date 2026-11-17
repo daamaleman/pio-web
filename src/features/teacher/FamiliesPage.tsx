@@ -72,9 +72,8 @@ export default function FamiliesPage() {
     return m
   }, [data.data])
 
-  const sheetBy = useMemo(
-    () => new Map((data.data?.sheets ?? []).filter((s) => s.lesson_id === currentLesson).map((s) => [s.student_id, s])),
-    [data.data, currentLesson],
+  const sheetBy = new Map(
+    (data.data?.sheets ?? []).filter((s) => s.lesson_id === currentLesson).map((s) => [s.student_id, s]),
   )
 
   if (groups.isLoading || students.isLoading) return <div className="m-5 h-96 animate-pulse rounded-card bg-linea lg:m-10" />

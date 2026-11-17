@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 import type { AuthError, EmailOtpType } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
@@ -11,36 +11,42 @@ function passwordError(e: AuthError): string {
   return 'No pudimos guardar la contraseña. Intentá de nuevo.'
 }
 
+// What the link brought, read once when the page opens
+function readLink() {
+  const query = new URLSearchParams(window.location.search)
+  const hash = new URLSearchParams(window.location.hash.slice(1))
+  return {
+    errorCode: hash.get('error_code') ?? query.get('error_code'),
+    tokenHash: query.get('token_hash'),
+    type: query.get('type') as EmailOtpType | null,
+  }
+}
+
+function linkErrorText(code: string) {
+  return code === 'otp_expired' ? 'El enlace venció (dura 24 horas) o ya se usó.' : 'El enlace no es válido.'
+}
+
 export default function SetPasswordPage({ mode }: { mode: 'invite' | 'recovery' }) {
   const { loading, session } = useAuth()
   const navigate = useNavigate()
-  const [verifying, setVerifying] = useState(true)
-  const [linkError, setLinkError] = useState<string | null>(null)
+  const [link] = useState(readLink)
+  const [verifying, setVerifying] = useState(() => !link.errorCode && !!link.tokenHash && !!link.type)
+  const [linkError, setLinkError] = useState<string | null>(() => (link.errorCode ? linkErrorText(link.errorCode) : null))
+  const started = useRef(false)
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
 
   useEffect(() => {
-    const query = new URLSearchParams(window.location.search)
-    const hash = new URLSearchParams(window.location.hash.slice(1))
-    const errorCode = hash.get('error_code') ?? query.get('error_code')
-    const tokenHash = query.get('token_hash')
-    const type = query.get('type') as EmailOtpType | null
-
-    if (errorCode) {
-      setLinkError(errorCode === 'otp_expired' ? 'El enlace venció (dura 24 horas) o ya se usó.' : 'El enlace no es válido.')
+    if (!verifying || !link.tokenHash || !link.type || started.current) return
+    started.current = true // React runs effects twice in development: the token can only be used once
+    supabase.auth.verifyOtp({ token_hash: link.tokenHash, type: link.type }).then(({ error: e }) => {
+      if (e) setLinkError('El enlace venció o ya se usó.')
+      window.history.replaceState(null, '', window.location.pathname) // remove the token from the address bar
       setVerifying(false)
-    } else if (tokenHash && type) {
-      supabase.auth.verifyOtp({ token_hash: tokenHash, type }).then(({ error: e }) => {
-        if (e) setLinkError('El enlace venció o ya se usó.')
-        window.history.replaceState(null, '', window.location.pathname) // remove the token from the address bar
-        setVerifying(false)
-      })
-    } else {
-      setVerifying(false) // session came in the URL hash: supabase-js already read it
-    }
-  }, [])
+    })
+  }, [link, verifying])
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()

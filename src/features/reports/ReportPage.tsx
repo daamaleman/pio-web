@@ -5,6 +5,7 @@ import { ArrowLeft, ChevronLeft, ChevronRight, FileSpreadsheet, Lock, Printer } 
 import { supabase } from '@/lib/supabase'
 import { ErrorCard } from '@/components/ui/Card'
 import { groupLabel, pickText, shortDate, todayISO } from '@/lib/format'
+import { defaultTone, downloadPioWorkbook } from '@/lib/excelTemplate'
 import { useMyProfile } from '@/features/auth/useMyProfile'
 import { useGroupOverview, useGroupStudents, useMyGroups, type AssignmentProgress } from '@/features/teacher/api'
 
@@ -108,37 +109,57 @@ export default function ReportPage() {
   }, [students.data, reports])
 
   async function downloadExcel() {
-    const XLSX = await import('xlsx')
-    const wb = XLSX.utils.book_new()
-    const head = [
-      ['Pío · Siento y Crezco — Reporte de cierre de mes'],
+    const label = group ? groupLabel(group) : ''
+    const subtitle = `${label} · ${monthName}`
+    const meta: [string, string][] = [
       ['Escuela', overview.data?.group.school_name ?? ''],
-      ['Grupo', group ? groupLabel(group) : ''],
+      ['Grupo', label],
       ['Docente', profile?.full_name ?? ''],
       ['Mes', monthName],
-      ['Generado', todayISO()],
-      [],
+      ['Generado', shortDate(todayISO())],
     ]
-    const summary = XLSX.utils.aoa_to_sheet([
-      ...head,
-      ['Semana', 'Lección', 'Clase', 'Fecha límite', 'Estudiantes', 'Completaron', '% completado'],
-      ...reports.map((r) => [r.week, pickText(r.title), r.class_date, r.due_date, r.summary.students, r.summary.completed, r.summary.completed_pct]),
-      [],
-      ['Escala cualitativa: Logrado · En proceso · Necesita apoyo. Pío no usa notas numéricas.'],
-    ])
-    summary['!cols'] = [{ wch: 10 }, { wch: 40 }, { wch: 12 }, { wch: 13 }, { wch: 12 }, { wch: 12 }, { wch: 14 }]
-    XLSX.utils.book_append_sheet(wb, summary, 'Resumen')
+    const notes = [
+      'Escala cualitativa: Logrado · En proceso · Necesita apoyo. Pío no usa notas numéricas; los indicadores acompañan la observación de la docente.',
+      'Este archivo contiene nombres y resultados de estudiantes. Guardalo y compartilo solo con quien corresponda.',
+    ]
 
-    const checklist = XLSX.utils.aoa_to_sheet([
-      ...head,
-      ['Estudiante', ...columns.map((c) => c.label), 'Lecciones completas', 'Indicadores logrados', 'Necesita apoyo'],
-      ...rows.map((r) => [r.name, ...columns.map((c) => r.cells[c.key] ?? '—'), `${r.lessonsDone}/${r.targeted}`, r.achieved, r.support]),
+    await downloadPioWorkbook(`Pio_Reporte_${label.replace(/[^\p{L}\p{N}]+/gu, '_')}_${month.slice(0, 7)}.xlsx`, [
+      {
+        name: 'Resumen',
+        title: 'Reporte de cierre de mes',
+        subtitle,
+        meta,
+        columns: [
+          { header: 'Semana', width: 16 }, { header: 'Lección', width: 40 }, { header: 'Clase', width: 14 },
+          { header: 'Fecha límite', width: 14 }, { header: 'Estudiantes', width: 13 }, { header: 'Completaron', width: 13 },
+          { header: '% completado', width: 14 },
+        ],
+        rows: reports.map((r) => [
+          `Semana ${r.week}`, pickText(r.title), shortDate(r.class_date), shortDate(r.due_date),
+          r.summary.students, r.summary.completed, `${r.summary.completed_pct}%`,
+        ]),
+        notes,
+        tabColor: 'rosa',
+      },
+      {
+        name: 'Lista de cotejo',
+        title: 'Lista de cotejo por estudiante',
+        subtitle,
+        meta,
+        columns: [
+          { header: 'Estudiante', width: 26 },
+          ...columns.map((c) => ({ header: c.label, width: 18 })),
+          { header: 'Lecciones completas', width: 14 },
+          { header: 'Indicadores logrados', width: 14 },
+          { header: 'Necesita apoyo', width: 12 },
+        ],
+        rows: rows.map((r) => [r.name, ...columns.map((c) => r.cells[c.key] ?? '—'), `${r.lessonsDone}/${r.targeted}`, r.achieved, r.support]),
+        tone: (v, col) => (col === columns.length + 3 ? (typeof v === 'number' && v > 0 ? 'bad' : null) : defaultTone(v)),
+        freezeFirstColumn: true,
+        notes,
+        tabColor: 'azul',
+      },
     ])
-    checklist['!cols'] = [{ wch: 26 }, ...columns.map(() => ({ wch: 18 })), { wch: 18 }, { wch: 18 }, { wch: 15 }]
-    XLSX.utils.book_append_sheet(wb, checklist, 'Lista de cotejo')
-
-    const file = `Pio_Reporte_${group ? groupLabel(group).replace(/[^\p{L}\p{N}]+/gu, '_') : 'grupo'}_${month.slice(0, 7)}.xlsx`
-    XLSX.writeFile(wb, file)
   }
 
   if (groups.isLoading || students.isLoading) return <div className="m-5 h-96 animate-pulse rounded-card bg-linea lg:m-10" />
