@@ -9,6 +9,15 @@ const CHAT_CATEGORY: Record<string, string> = {
   other: 'Otra situación de riesgo',
 }
 
+export const OBS_CATEGORY: Record<string, string> = {
+  emotional: 'Emocional',
+  social: 'Convivencia',
+  participation: 'Participación',
+  learning: 'Aprendizaje',
+  family: 'Familia',
+  other: 'Otra',
+}
+
 export const LEVEL = {
   support: { label: 'Apoyo', cls: 'bg-azul-suave text-azul' },
   risk_moderate: { label: 'Riesgo moderado', cls: 'bg-[#FFF3D1] text-[#7A5600]' },
@@ -42,6 +51,12 @@ export function reasonText(reason: string, detailsJson: Json): { title: string; 
         title: CHAT_CATEGORY[String(d.category)] ?? 'Situación de riesgo',
         detail: 'Detectado en el chat «Pío te escucha». La conversación no se muestra a nadie.',
         advice: 'Seguí el protocolo de orientación: hablar hoy con el estudiante y contactar a la familia según el protocolo UNICEF/MINED.',
+      }
+    case 'teacher_referral':
+      return {
+        title: 'La docente pidió apoyo de orientación',
+        detail: `Desde una observación en clase · ${OBS_CATEGORY[String(d.category)] ?? 'Sin categoría'}. El texto de la observación queda con la docente.`,
+        advice: 'Coordiná con la docente un momento para conversar con el estudiante.',
       }
     default:
       return { title: 'Alerta de apoyo', detail: '', advice: 'Conversá con el estudiante.' }

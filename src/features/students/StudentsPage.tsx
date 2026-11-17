@@ -90,7 +90,9 @@ export default function StudentsPage() {
               <li key={s.id} className="border-b border-linea px-4 py-3 last:border-0">
                 <div className="flex items-center gap-3">
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cian text-sm font-extrabold text-white">{initials(s.display_name)}</span>
-                  <span className="flex-1 font-bold">{s.display_name}</span>
+                  <Link to={`/docente/grupos/${group.id}/estudiantes/${s.id}`} className="flex-1 font-bold hover:text-azul hover:underline">
+                    {s.display_name}
+                  </Link>
                   {confirmId !== s.id && (
                     <button onClick={() => setConfirmId(s.id)} className="flex items-center gap-1.5 rounded-full border-2 border-linea px-3 py-1.5 text-sm font-bold">
                       <KeyRound size={16} /> Nuevo PIN

@@ -1373,12 +1373,81 @@ export type Database = {
           },
         ]
       }
+      teacher_observations: {
+        Row: {
+          author_id: string
+          category: string
+          created_at: string
+          id: string
+          lesson_id: string | null
+          note: string
+          observed_on: string
+          referred: boolean
+          student_id: string
+        }
+        Insert: {
+          author_id: string
+          category: string
+          created_at?: string
+          id?: string
+          lesson_id?: string | null
+          note: string
+          observed_on?: string
+          referred?: boolean
+          student_id: string
+        }
+        Update: {
+          author_id?: string
+          category?: string
+          created_at?: string
+          id?: string
+          lesson_id?: string | null
+          note?: string
+          observed_on?: string
+          referred?: boolean
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teacher_observations_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_observations_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_observations_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       accept_ai_terms: { Args: { p_version: string }; Returns: Json }
+      add_observation: {
+        Args: {
+          p_category: string
+          p_lesson_id?: string
+          p_note: string
+          p_observed_on?: string
+          p_refer?: boolean
+          p_student_id: string
+        }
+        Returns: Json
+      }
       ai_chat_context: { Args: { p_student_id: string }; Returns: Json }
       ai_chat_record: {
         Args: {

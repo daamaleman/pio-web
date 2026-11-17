@@ -13,6 +13,7 @@ import FamilyPage from "@/features/family/FamilyPage";
 import GroupsPage from "@/features/teacher/GroupsPage";
 import FamilyQrPage from "@/features/teacher/FamilyQrPage";
 import StudentsPage from "@/features/students/StudentsPage";
+import StudentPage from "@/features/students/StudentPage";
 import ImportStudentsPage from "@/features/students/ImportStudentsPage";
 import SchoolHome from "@/features/school/SchoolHome";
 import StaffPage from "@/features/school/StaffPage";
@@ -69,6 +70,10 @@ export const router = createBrowserRouter([
               {
                 path: "docente/grupos/:groupId/estudiantes",
                 element: <StudentsPage />,
+              },
+              {
+                path: "docente/grupos/:groupId/estudiantes/:studentId",
+                element: <StudentPage />,
               },
               {
                 path: "docente/grupos/:groupId/familias",
